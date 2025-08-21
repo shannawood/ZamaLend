@@ -7,7 +7,7 @@ import { encryptValue } from '@/utils/fhe';
 
 export default function StakePage() {
   const { address, isConnected, status } = useAccount();
-  const { stakeTokens, borrowTokens, approveToken } = useContracts();
+  const { stakeTokens, approveToken } = useContracts();
   const { cDogeBalance } = useTokenBalances(['cDoge']);
   const { isInitialized: fheInitialized, initFHE, error: fheError, isInitializing } = useFHE();
   
@@ -94,29 +94,6 @@ export default function StakePage() {
     }
   };
 
-  const handleBorrow = async () => {
-    if (!stakeAmount) return;
-    
-    if (!fheInitialized) {
-      setMessage('请先初始化FHE后再进行借贷操作');
-      return;
-    }
-
-    try {
-      setMessage('正在借贷...');
-      
-      const amount = parseInt(stakeAmount);
-      // Borrow 50% of staked value in USDT
-      const borrowAmount = Math.floor(amount * 0.5);
-      
-      await borrowTokens(borrowAmount);
-      
-      setMessage(`借贷 ${borrowAmount} cUSDT 成功！`);
-    } catch (error) {
-      console.error('Borrowing failed:', error);
-      setMessage('借贷失败，请重试');
-    }
-  };
 
   const testEncryption = async () => {
     if (!address || !fheInitialized) {
@@ -173,7 +150,7 @@ export default function StakePage() {
       <div className="card">
         <h2>质押 cDoge</h2>
         <p style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '2rem' }}>
-          质押您的 cDoge 代币，可以借贷 50% 价值的 cUSDT
+          质押您的 cDoge 代币作为抵押品，质押后可以在借贷页面借贷 cUSDT
         </p>
 
         {/* FHE Not Initialized Warning */}
@@ -255,10 +232,6 @@ export default function StakePage() {
             <span>质押数量:</span>
             <span>{stakeAmount || '0'} cDoge</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0.5rem 0' }}>
-            <span>可借贷数量:</span>
-            <span>{stakeAmount ? Math.floor(parseInt(stakeAmount) * 0.5) : '0'} cUSDT</span>
-          </div>
         </div>
 
         <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
@@ -283,15 +256,6 @@ export default function StakePage() {
           </button>
         </div>
 
-        <button
-          className="btn btn-secondary"
-          onClick={handleBorrow}
-          disabled={!stakeAmount || !fheInitialized}
-          title={!fheInitialized ? '请先初始化FHE' : undefined}
-          style={{ width: '100%', marginTop: '1rem' }}
-        >
-          借贷 cUSDT
-        </button>
 
         {/* Test Encryption Button */}
         <button
@@ -319,7 +283,8 @@ export default function StakePage() {
           <ol style={{ textAlign: 'left', color: 'rgba(255, 255, 255, 0.8)' }}>
             <li>首先点击"授权"按钮，允许合约使用您的 cDoge</li>
             <li>然后点击"质押"按钮，将 cDoge 质押到合约中</li>
-            <li>质押成功后，您可以借贷相当于质押价值 50% 的 cUSDT</li>
+            <li>质押成功后，前往"借贷"页面可借贷相当于质押价值 50% 的 cUSDT</li>
+            <li>在"资产"页面可以查看您的质押情况和取款</li>
             <li>所有操作都是隐私的，金额在链上是加密存储的</li>
           </ol>
         </div>

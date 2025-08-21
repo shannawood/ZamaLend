@@ -12,9 +12,9 @@ export default function Layout({ children }: LayoutProps) {
   const { isInitialized, isInitializing, error, initFHE, resetError } = useFHE();
 
   const navItems = [
-    { path: '/', label: '钱包' },
-    { path: '/stake', label: '质押' },
     { path: '/assets', label: '资产' },
+    { path: '/stake', label: '质押' },
+    { path: '/lending', label: '借贷' },
     { path: '/repay', label: '还款' },
   ];
 

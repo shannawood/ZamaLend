@@ -6,9 +6,9 @@ import { config } from './config/wagmi';
 import { FHEProvider } from './contexts/FHEContext';
 
 import Layout from './components/Layout';
-import HomePage from './pages/HomePage';
-import StakePage from './pages/StakePage';
 import AssetsPage from './pages/AssetsPage';
+import StakePage from './pages/StakePage';
+import LendingPage from './pages/LendingPage';
 import RepayPage from './pages/RepayPage';
 
 import '@rainbow-me/rainbowkit/styles.css';
@@ -40,9 +40,10 @@ function App() {
             <Router>
               <Layout>
                 <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/stake" element={<StakePage />} />
+                  <Route path="/" element={<AssetsPage />} />
                   <Route path="/assets" element={<AssetsPage />} />
+                  <Route path="/stake" element={<StakePage />} />
+                  <Route path="/lending" element={<LendingPage />} />
                   <Route path="/repay" element={<RepayPage />} />
                 </Routes>
               </Layout>

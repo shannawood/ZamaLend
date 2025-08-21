@@ -275,7 +275,7 @@ export function useContracts() {
       address: CONTRACT_ADDRESSES.ZAMA_LEND as `0x${string}`,
       abi: ZAMA_LEND_ABI,
       functionName: 'borrow',
-      args: [encrypted.handles[0] as unknown as `0x${string}`, encrypted.inputProof as unknown as `0x${string}`],
+      args: [parseHex(encrypted.handles[0]) as `0x${string}`, parseHex(encrypted.inputProof) as `0x${string}`],
     });
   };
 
@@ -288,7 +288,7 @@ export function useContracts() {
       address: CONTRACT_ADDRESSES.ZAMA_LEND as `0x${string}`,
       abi: ZAMA_LEND_ABI,
       functionName: 'repay',
-      args: [encrypted.handles[0] as unknown as `0x${string}`, encrypted.inputProof as unknown as `0x${string}`],
+      args: [parseHex(encrypted.handles[0]) as `0x${string}`, parseHex(encrypted.inputProof) as `0x${string}`],
     });
   };
 
@@ -301,7 +301,7 @@ export function useContracts() {
       address: CONTRACT_ADDRESSES.ZAMA_LEND as `0x${string}`,
       abi: ZAMA_LEND_ABI,
       functionName: 'withdraw',
-      args: [encrypted.handles[0] as unknown as `0x${string}`, encrypted.inputProof as unknown as `0x${string}`],
+      args: [parseHex(encrypted.handles[0]) as `0x${string}`, parseHex(encrypted.inputProof) as `0x${string}`],
     });
   };
 
