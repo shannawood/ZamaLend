@@ -9,21 +9,20 @@ import {FHE, euint64} from "@fhevm/solidity/lib/FHE.sol";
 contract ConfidentialDoge is ConfidentialFungibleToken, SepoliaConfig {
     address public owner;
     euint64 public totalSupply;
-    uint256 public constant INITIAL_SUPPLY = 1000000 * 10**18; // 1M cDOGE
-    
+
     event SupplyMinted(address indexed to, uint256 amount);
-    
+
     modifier onlyOwner() {
         require(msg.sender == owner, "Not owner");
         _;
     }
-    
+
     constructor() ConfidentialFungibleToken("cDoge", "cDOGE", "") {
         owner = msg.sender;
-        totalSupply = FHE.asEuint64(uint64(INITIAL_SUPPLY));
+        totalSupply = FHE.asEuint64(0);
         FHE.allowThis(totalSupply);
     }
-    
+
     function mint(address to, uint64 amount) public onlyOwner {
         euint64 encryptedAmount = FHE.asEuint64(amount);
         _mint(to, encryptedAmount);
@@ -31,7 +30,7 @@ contract ConfidentialDoge is ConfidentialFungibleToken, SepoliaConfig {
         FHE.allowThis(totalSupply);
         emit SupplyMinted(to, amount);
     }
-    
+
     function getTotalSupply() public view returns (euint64) {
         return totalSupply;
     }
