@@ -3,10 +3,12 @@ import { useAccount, useWalletClient } from 'wagmi';
 import { useTokenBalances } from '@/hooks/useContracts';
 import { decryptBalance } from '@/utils/fhe';
 import { CONTRACT_ADDRESSES } from '@/constants/contracts';
+import { useFHE } from '@/contexts/FHEContext';
 
 export default function HomePage() {
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
+  const { isInitialized: fheInitialized, initFHE } = useFHE();
   const { cDogeBalance, cUSDTBalance, isLoading, errors } = useTokenBalances(['cDoge', 'cUSDT']);
   
   const [decryptedBalances, setDecryptedBalances] = useState<{
@@ -22,6 +24,11 @@ export default function HomePage() {
   const handleDecryptBalance = async (tokenType: 'cDoge' | 'cUSDT') => {
     if (!address || !walletClient) return;
     
+    if (!fheInitialized) {
+      alert('请先初始化FHE后再进行解密操作');
+      return;
+    }
+    
     const ciphertext = tokenType === 'cDoge' ? cDogeBalance : cUSDTBalance;
     if (!ciphertext) return;
 
@@ -36,6 +43,7 @@ export default function HomePage() {
       setDecryptedBalances(prev => ({ ...prev, [tokenType]: decrypted }));
     } catch (error) {
       console.error(`Failed to decrypt ${tokenType} balance:`, error);
+      alert(`解密${tokenType}余额失败，请确保FHE已正确初始化`);
     } finally {
       setDecryptingBalances(prev => ({ ...prev, [tokenType]: false }));
     }
@@ -57,6 +65,57 @@ export default function HomePage() {
         <p style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '2rem' }}>
           您的加密代币余额，点击解密按钮查看明文余额
         </p>
+        
+        {/* FHE Not Initialized Warning */}
+        {!fheInitialized && (
+          <div style={{
+            backgroundColor: 'rgba(251, 191, 36, 0.1)',
+            border: '1px solid rgba(251, 191, 36, 0.3)',
+            borderRadius: '8px',
+            padding: '1rem',
+            marginBottom: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem'
+          }}>
+            <div style={{ 
+              width: '24px', 
+              height: '24px', 
+              backgroundColor: '#fbbf24', 
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              flexShrink: 0
+            }}>
+              !
+            </div>
+            <div>
+              <h4 style={{ margin: '0 0 0.25rem 0', color: '#fbbf24' }}>需要初始化FHE</h4>
+              <p style={{ margin: '0', color: 'rgba(251, 191, 36, 0.8)', fontSize: '0.875rem' }}>
+                请先点击右上角的 "Init FHE" 按钮初始化加密系统，然后才能解密查看余额明文
+              </p>
+            </div>
+            <button
+              onClick={initFHE}
+              style={{
+                padding: '0.5rem 1rem',
+                fontSize: '0.875rem',
+                backgroundColor: '#fbbf24',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                flexShrink: 0
+              }}
+            >
+              立即初始化
+            </button>
+          </div>
+        )}
         
         {/* Show loading state */}
         {isLoading && (
@@ -99,7 +158,8 @@ export default function HomePage() {
             <button
               className="btn btn-secondary"
               onClick={() => handleDecryptBalance('cDoge')}
-              disabled={!cDogeBalance || decryptingBalances.cDoge || isLoading}
+              disabled={!cDogeBalance || decryptingBalances.cDoge || isLoading || !fheInitialized}
+              title={!fheInitialized ? '请先初始化FHE' : undefined}
             >
               {decryptingBalances.cDoge ? '解密中...' : '解密'}
             </button>
@@ -129,7 +189,8 @@ export default function HomePage() {
             <button
               className="btn btn-secondary"
               onClick={() => handleDecryptBalance('cUSDT')}
-              disabled={!cUSDTBalance || decryptingBalances.cUSDT || isLoading}
+              disabled={!cUSDTBalance || decryptingBalances.cUSDT || isLoading || !fheInitialized}
+              title={!fheInitialized ? '请先初始化FHE' : undefined}
             >
               {decryptingBalances.cUSDT ? '解密中...' : '解密'}
             </button>

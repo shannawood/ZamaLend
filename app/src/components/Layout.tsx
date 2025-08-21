@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { ReactNode } from 'react';
+import { useFHE } from '@/contexts/FHEContext';
 
 interface LayoutProps {
   children: ReactNode;
@@ -8,6 +9,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
+  const { isInitialized, isInitializing, error, initFHE, resetError } = useFHE();
 
   const navItems = [
     { path: '/', label: '钱包' },
@@ -36,8 +38,129 @@ export default function Layout({ children }: LayoutProps) {
         }}>
           ZamaLend
         </h1>
-        <ConnectButton />
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {/* FHE Status and Init Button */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {isInitialized ? (
+              <span style={{ 
+                color: '#4ade80', 
+                fontSize: '0.875rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem'
+              }}>
+                <span style={{ 
+                  width: '8px', 
+                  height: '8px', 
+                  backgroundColor: '#4ade80', 
+                  borderRadius: '50%' 
+                }} />
+                FHE已初始化
+              </span>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ 
+                  color: isInitializing ? '#fbbf24' : '#f87171', 
+                  fontSize: '0.875rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.25rem'
+                }}>
+                  <span style={{ 
+                    width: '8px', 
+                    height: '8px', 
+                    backgroundColor: isInitializing ? '#fbbf24' : '#f87171', 
+                    borderRadius: '50%' 
+                  }} />
+                  {isInitializing ? 'FHE初始化中...' : 'FHE未初始化'}
+                </span>
+                <button
+                  onClick={initFHE}
+                  disabled={isInitializing}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    fontSize: '0.875rem',
+                    backgroundColor: isInitializing ? '#6b7280' : '#3b82f6',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: isInitializing ? 'not-allowed' : 'pointer',
+                    transition: 'background-color 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isInitializing) {
+                      e.currentTarget.style.backgroundColor = '#2563eb';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isInitializing) {
+                      e.currentTarget.style.backgroundColor = '#3b82f6';
+                    }
+                  }}
+                >
+                  {isInitializing ? '初始化中...' : 'Init FHE'}
+                </button>
+              </div>
+            )}
+          </div>
+          
+          <ConnectButton />
+        </div>
       </header>
+
+      {/* FHE Error Display */}
+      {error && (
+        <div style={{
+          margin: '0 2rem 1rem 2rem',
+          padding: '1rem',
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          borderRadius: '8px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          gap: '1rem'
+        }}>
+          <div>
+            <h4 style={{ margin: '0 0 0.5rem 0', color: '#ef4444' }}>FHE初始化失败</h4>
+            <p style={{ margin: '0', color: '#fca5a5', fontSize: '0.875rem' }}>
+              {error}
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+            <button
+              onClick={initFHE}
+              disabled={isInitializing}
+              style={{
+                padding: '0.5rem 1rem',
+                fontSize: '0.875rem',
+                backgroundColor: '#ef4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+              }}
+            >
+              重试
+            </button>
+            <button
+              onClick={resetError}
+              style={{
+                padding: '0.5rem 1rem',
+                fontSize: '0.875rem',
+                backgroundColor: 'transparent',
+                color: '#fca5a5',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: '6px',
+                cursor: 'pointer',
+              }}
+            >
+              关闭
+            </button>
+          </div>
+        </div>
+      )}
 
       <nav className="nav">
         {navItems.map((item) => (

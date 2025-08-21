@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useContracts, useTokenBalances } from '@/hooks/useContracts';
 import { CONTRACT_ADDRESSES } from '@/constants/contracts';
+import { useFHE } from '@/contexts/FHEContext';
 
 export default function StakePage() {
   const { address, isConnected } = useAccount();
   const { stakeTokens, approveToken } = useContracts();
   const { cDogeBalance } = useTokenBalances(['cDoge']);
+  const { isInitialized: fheInitialized, initFHE } = useFHE();
   
   const [stakeAmount, setStakeAmount] = useState('');
   const [isApproving, setIsApproving] = useState(false);
@@ -15,6 +17,11 @@ export default function StakePage() {
 
   const handleApprove = async () => {
     if (!stakeAmount || !address) return;
+    
+    if (!fheInitialized) {
+      setMessage('请先初始化FHE后再进行授权操作');
+      return;
+    }
 
     try {
       setIsApproving(true);
@@ -34,6 +41,11 @@ export default function StakePage() {
 
   const handleStake = async () => {
     if (!stakeAmount || !address) return;
+    
+    if (!fheInitialized) {
+      setMessage('请先初始化FHE后再进行质押操作');
+      return;
+    }
 
     try {
       setIsStaking(true);
@@ -89,6 +101,57 @@ export default function StakePage() {
           质押您的 cDoge 代币，可以借贷 50% 价值的 cUSDT
         </p>
 
+        {/* FHE Not Initialized Warning */}
+        {!fheInitialized && (
+          <div style={{
+            backgroundColor: 'rgba(251, 191, 36, 0.1)',
+            border: '1px solid rgba(251, 191, 36, 0.3)',
+            borderRadius: '8px',
+            padding: '1rem',
+            marginBottom: '2rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem'
+          }}>
+            <div style={{ 
+              width: '24px', 
+              height: '24px', 
+              backgroundColor: '#fbbf24', 
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              flexShrink: 0
+            }}>
+              !
+            </div>
+            <div>
+              <h4 style={{ margin: '0 0 0.25rem 0', color: '#fbbf24' }}>需要初始化FHE</h4>
+              <p style={{ margin: '0', color: 'rgba(251, 191, 36, 0.8)', fontSize: '0.875rem' }}>
+                请先点击右上角的 "Init FHE" 按钮初始化加密系统，然后才能进行质押操作
+              </p>
+            </div>
+            <button
+              onClick={initFHE}
+              style={{
+                padding: '0.5rem 1rem',
+                fontSize: '0.875rem',
+                backgroundColor: '#fbbf24',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                flexShrink: 0
+              }}
+            >
+              立即初始化
+            </button>
+          </div>
+        )}
+
         <div className="input-group">
           <label htmlFor="stakeAmount">质押数量</label>
           <input
@@ -127,7 +190,8 @@ export default function StakePage() {
           <button
             className="btn"
             onClick={handleApprove}
-            disabled={!stakeAmount || isApproving}
+            disabled={!stakeAmount || isApproving || !fheInitialized}
+            title={!fheInitialized ? '请先初始化FHE' : undefined}
             style={{ flex: 1 }}
           >
             {isApproving ? '授权中...' : '1. 授权'}
@@ -136,7 +200,8 @@ export default function StakePage() {
           <button
             className="btn"
             onClick={handleStake}
-            disabled={!stakeAmount || isStaking}
+            disabled={!stakeAmount || isStaking || !fheInitialized}
+            title={!fheInitialized ? '请先初始化FHE' : undefined}
             style={{ flex: 1 }}
           >
             {isStaking ? '质押中...' : '2. 质押'}
@@ -146,7 +211,8 @@ export default function StakePage() {
         <button
           className="btn btn-secondary"
           onClick={handleBorrow}
-          disabled={!stakeAmount}
+          disabled={!stakeAmount || !fheInitialized}
+          title={!fheInitialized ? '请先初始化FHE' : undefined}
           style={{ width: '100%', marginTop: '1rem' }}
         >
           借贷 cUSDT
