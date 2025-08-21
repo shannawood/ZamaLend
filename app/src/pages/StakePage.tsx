@@ -240,19 +240,7 @@ export default function StakePage() {
 
 
         {/* Test Encryption Button */}
-        <button
-          className="btn"
-          onClick={testEncryption}
-          disabled={!fheInitialized || testingEncryption}
-          style={{ 
-            width: '100%', 
-            marginTop: '0.5rem', 
-            backgroundColor: '#ff9800',
-            fontSize: '0.875rem'
-          }}
-        >
-          {testingEncryption ? '🧪 测试中...' : '🧪 测试加密功能'}
-        </button>
+        
 
         {message && (
           <div className={`${message.includes('失败') ? 'error' : 'success'}`}>
