@@ -12,6 +12,7 @@ export const SEPOLIA_CONFIG = {
   verifyingContractAddressInputVerification: "0x7048C39f048125eDa9d678AEbaDfB22F7900a29F",
   chainId: 11155111,
   gatewayChainId: 55815,
+  network: "https://sepolia.infura.io/v3/18647f21ab6f4e3c9bfd7df4fe61644c",
   relayerUrl: "https://relayer.testnet.zama.cloud",
 } as const;
 
@@ -25,8 +26,8 @@ export const CHAINS = {
       symbol: 'SEP',
     },
     rpcUrls: {
-      public: { http: ['https://rpc.sepolia.org'] },
-      default: { http: ['https://rpc.sepolia.org'] },
+      public: { http: ['https://sepolia.infura.io/v3/18647f21ab6f4e3c9bfd7df4fe61644c'] },
+      default: { http: ['https://sepolia.infura.io/v3/18647f21ab6f4e3c9bfd7df4fe61644c'] },
     },
     blockExplorers: {
       etherscan: { name: 'Etherscan', url: 'https://sepolia.etherscan.io' },

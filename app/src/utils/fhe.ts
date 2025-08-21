@@ -1,5 +1,6 @@
-import { createInstance, initSDK, SepoliaConfig } from '@zama-fhe/relayer-sdk/bundle';
+import { createInstance, initSDK } from '@zama-fhe/relayer-sdk/bundle';
 import type { FhevmInstance } from '@zama-fhe/relayer-sdk/bundle';
+import { SEPOLIA_CONFIG } from '@/constants/contracts';
 
 // declare global {
 //   interface Window {
@@ -30,7 +31,7 @@ export async function initializeFHEVM(): Promise<FhevmInstance> {
     console.log("TFHE WASM loaded successfully");
     
     const config = {
-      ...SepoliaConfig,
+      ...SEPOLIA_CONFIG,
       network: window.ethereum,
     };
     

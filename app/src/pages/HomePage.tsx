@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useAccount, useWalletClient } from 'wagmi';
-import { useBalances } from '@/hooks/useContracts';
+import { useTokenBalances } from '@/hooks/useContracts';
 import { decryptBalance } from '@/utils/fhe';
 import { CONTRACT_ADDRESSES } from '@/constants/contracts';
 
 export default function HomePage() {
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
-  const { cDogeBalance, cUSDTBalance, isLoading, errors } = useBalances();
+  const { cDogeBalance, cUSDTBalance, isLoading, errors } = useTokenBalances(['cDoge', 'cUSDT']);
   
   const [decryptedBalances, setDecryptedBalances] = useState<{
     cDoge?: string | null;

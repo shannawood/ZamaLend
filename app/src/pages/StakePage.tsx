@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
-import { useContracts, useBalances } from '@/hooks/useContracts';
+import { useContracts, useTokenBalances } from '@/hooks/useContracts';
 import { CONTRACT_ADDRESSES } from '@/constants/contracts';
 
 export default function StakePage() {
   const { address, isConnected } = useAccount();
   const { stakeTokens, approveToken } = useContracts();
-  const { cDogeBalance } = useBalances();
+  const { cDogeBalance } = useTokenBalances(['cDoge']);
   
   const [stakeAmount, setStakeAmount] = useState('');
   const [isApproving, setIsApproving] = useState(false);

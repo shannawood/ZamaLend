@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 
 interface LayoutProps {
   children: ReactNode;

@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useAccount, useWalletClient } from 'wagmi';
-import { useBalances, useContracts } from '@/hooks/useContracts';
+import { useLendingData, useContracts } from '@/hooks/useContracts';
 import { decryptBalance } from '@/utils/fhe';
 import { CONTRACT_ADDRESSES } from '@/constants/contracts';
 
 export default function AssetsPage() {
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
-  const { stakedAmount, borrowedAmount, availableToBorrow } = useBalances();
+  const { stakedAmount, borrowedAmount, availableToBorrow } = useLendingData(['staked', 'borrowed', 'available']);
   const { withdrawTokens } = useContracts();
   
   const [decryptedAmounts, setDecryptedAmounts] = useState<{
