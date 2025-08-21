@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { ReactNode, useEffect } from 'react';
-import { initializeFHEVM } from '@/utils/fhe';
 
 interface LayoutProps {
   children: ReactNode;
@@ -9,10 +8,6 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
-
-  useEffect(() => {
-    initializeFHEVM().catch(console.error);
-  }, []);
 
   const navItems = [
     { path: '/', label: '钱包' },

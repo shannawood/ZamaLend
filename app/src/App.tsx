@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -15,6 +16,22 @@ import '@rainbow-me/rainbowkit/styles.css';
 const queryClient = new QueryClient();
 
 function App() {
+  // useEffect(() => {
+  //   const initFHE = async () => {
+  //     try {
+  //       await initializeFHEVM();
+  //       setFheInitialized(true);
+  //       console.log('FHEVM initialized successfully');
+  //     } catch (error) {
+  //       console.error('Failed to initialize FHEVM:', error);
+  //       setFheError(error instanceof Error ? error.message : 'Unknown error');
+  //     }
+  //   };
+
+  //   initFHE();
+  // }, []);
+
+
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>

@@ -7,7 +7,7 @@ import { CONTRACT_ADDRESSES } from '@/constants/contracts';
 export default function HomePage() {
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
-  const { cDogeBalance, cUSDTBalance } = useBalances();
+  const { cDogeBalance, cUSDTBalance, isLoading, errors } = useBalances();
   
   const [decryptedBalances, setDecryptedBalances] = useState<{
     cDoge?: string | null;
@@ -58,13 +58,37 @@ export default function HomePage() {
           您的加密代币余额，点击解密按钮查看明文余额
         </p>
         
+        {/* Show loading state */}
+        {isLoading && (
+          <div style={{ textAlign: 'center', color: 'rgba(255, 255, 255, 0.7)', marginBottom: '1rem' }}>
+            <p>正在加载余额...</p>
+          </div>
+        )}
+
+        {/* Show errors if any */}
+        {(errors.cDoge || errors.cUSDT) && (
+          <div style={{ backgroundColor: 'rgba(255, 0, 0, 0.1)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem' }}>
+            <h4 style={{ margin: '0 0 0.5rem 0', color: '#ff4444' }}>加载错误</h4>
+            {errors.cDoge && <p style={{ margin: '0.25rem 0', color: '#ff8888' }}>cDoge: {errors.cDoge.message}</p>}
+            {errors.cUSDT && <p style={{ margin: '0.25rem 0', color: '#ff8888' }}>cUSDT: {errors.cUSDT.message}</p>}
+          </div>
+        )}
+
         <div style={{ display: 'grid', gap: '1rem' }}>
           {/* cDoge Balance */}
           <div className="balance-item">
             <div>
               <h3 style={{ margin: '0 0 0.5rem 0' }}>cDoge 余额</h3>
               <div className="balance-encrypted">
-                加密: {cDogeBalance ? `${cDogeBalance.slice(0, 10)}...` : '加载中...'}
+                加密: {
+                  cDogeBalance 
+                    ? `${cDogeBalance.slice(0, 10)}...` 
+                    : isLoading 
+                      ? '加载中...' 
+                      : errors.cDoge 
+                        ? '加载失败' 
+                        : '无余额'
+                }
               </div>
               {decryptedBalances.cDoge !== undefined && (
                 <div className="balance-decrypted">
@@ -75,7 +99,7 @@ export default function HomePage() {
             <button
               className="btn btn-secondary"
               onClick={() => handleDecryptBalance('cDoge')}
-              disabled={!cDogeBalance || decryptingBalances.cDoge}
+              disabled={!cDogeBalance || decryptingBalances.cDoge || isLoading}
             >
               {decryptingBalances.cDoge ? '解密中...' : '解密'}
             </button>
@@ -86,7 +110,15 @@ export default function HomePage() {
             <div>
               <h3 style={{ margin: '0 0 0.5rem 0' }}>cUSDT 余额</h3>
               <div className="balance-encrypted">
-                加密: {cUSDTBalance ? `${cUSDTBalance.slice(0, 10)}...` : '加载中...'}
+                加密: {
+                  cUSDTBalance 
+                    ? `${cUSDTBalance.slice(0, 10)}...` 
+                    : isLoading 
+                      ? '加载中...' 
+                      : errors.cUSDT 
+                        ? '加载失败' 
+                        : '无余额'
+                }
               </div>
               {decryptedBalances.cUSDT !== undefined && (
                 <div className="balance-decrypted">
@@ -97,7 +129,7 @@ export default function HomePage() {
             <button
               className="btn btn-secondary"
               onClick={() => handleDecryptBalance('cUSDT')}
-              disabled={!cUSDTBalance || decryptingBalances.cUSDT}
+              disabled={!cUSDTBalance || decryptingBalances.cUSDT || isLoading}
             >
               {decryptingBalances.cUSDT ? '解密中...' : '解密'}
             </button>

@@ -14,24 +14,42 @@ let fhevmInstance: FhevmInstance | null = null;
 
 export async function initializeFHEVM(): Promise<FhevmInstance> {
   if (fhevmInstance) {
+    console.log("FHEVM already initialized, returning existing instance");
     return fhevmInstance;
   }
 
-
+  console.log("Initializing FHEVM SDK...");
+  
   try {
+    if (!window.ethereum) {
+      throw new Error('MetaMask is not installed. Please install MetaMask to use this application.');
+    }
+
+    console.log("Loading TFHE WASM...");
     await initSDK();
+    console.log("TFHE WASM loaded successfully");
     
     const config = {
       ...SepoliaConfig,
       network: window.ethereum,
     };
     
+    console.log("Creating FHEVM instance with config:", config);
     fhevmInstance = await createInstance(config);
-    console.log("fhe init finish");
+    console.log("FHEVM initialized successfully");
+    
     return fhevmInstance;
   } catch (error) {
     console.error('Failed to initialize FHEVM:', error);
-    throw error;
+    
+    // Reset instance so we can retry
+    fhevmInstance = null;
+    
+    if (error instanceof Error) {
+      throw new Error(`FHEVM initialization failed: ${error.message}`);
+    } else {
+      throw new Error('FHEVM initialization failed with unknown error');
+    }
   }
 }
 
