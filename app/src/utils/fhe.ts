@@ -1,14 +1,14 @@
-import { SEPOLIA_CONFIG } from '@/constants/contracts';
-import type { FhevmInstance } from '@/types';
+import { createInstance, initSDK, SepoliaConfig } from '@zama-fhe/relayer-sdk/bundle';
+import type { FhevmInstance } from '@zama-fhe/relayer-sdk/bundle';
 
-declare global {
-  interface Window {
-    fhevm: {
-      initSDK: () => Promise<void>;
-      createInstance: (config: any) => Promise<FhevmInstance>;
-    };
-  }
-}
+// declare global {
+//   interface Window {
+//     fhevm: {
+//       initSDK: () => Promise<void>;
+//       createInstance: (config: any) => Promise<FhevmInstance>;
+//     };
+//   }
+// }
 
 let fhevmInstance: FhevmInstance | null = null;
 
@@ -17,19 +17,17 @@ export async function initializeFHEVM(): Promise<FhevmInstance> {
     return fhevmInstance;
   }
 
-  if (!window.fhevm) {
-    throw new Error('FHEVM SDK not loaded. Please ensure the script is included in your HTML.');
-  }
 
   try {
-    await window.fhevm.initSDK();
+    await initSDK();
     
     const config = {
-      ...SEPOLIA_CONFIG,
+      ...SepoliaConfig,
       network: window.ethereum,
     };
     
-    fhevmInstance = await window.fhevm.createInstance(config);
+    fhevmInstance = await createInstance(config);
+    console.log("fhe init finish");
     return fhevmInstance;
   } catch (error) {
     console.error('Failed to initialize FHEVM:', error);
