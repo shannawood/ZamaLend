@@ -236,17 +236,7 @@ export default function RepayPage() {
           </div>
         )}
 
-        <div style={{ marginTop: '2rem', padding: '1rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
-          <h3>还款流程说明</h3>
-          <ol style={{ textAlign: 'left', color: 'rgba(255, 255, 255, 0.8)' }}>
-            <li>首先解密查看您当前的借贷金额和 cUSDT 余额</li>
-            <li>输入要还款的 cUSDT 数量</li>
-            <li>点击"授权"按钮，允许合约使用您的 cUSDT</li>
-            <li>点击"还款"按钮完成还款</li>
-            <li>还款后将释放相应的质押资产</li>
-            <li>可以选择"全部还清"一次性还清所有借贷</li>
-          </ol>
-        </div>
+       
       </div>
     </div>
   );

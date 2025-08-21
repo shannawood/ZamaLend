@@ -128,24 +128,6 @@ export default function StakePage() {
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto' }}>
       {/* Debug Info Panel */}
-      <div style={{
-        backgroundColor: 'rgba(0, 0, 0, 0.2)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        borderRadius: '8px',
-        padding: '1rem',
-        marginBottom: '1rem',
-        fontSize: '0.875rem',
-        fontFamily: 'monospace'
-      }}>
-        <h4 style={{ margin: '0 0 0.5rem 0', color: '#64b5f6' }}>🔍 调试信息</h4>
-        <div style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-          <div>钱包状态: <span style={{ color: isConnected ? '#4caf50' : '#f44336' }}>{status}</span></div>
-          <div>地址: <span style={{ color: '#64b5f6' }}>{address || 'None'}</span></div>
-          <div>FHE初始化: <span style={{ color: fheInitialized ? '#4caf50' : '#f44336' }}>{fheInitialized ? '✅ 已完成' : (isInitializing ? '⏳ 进行中' : '❌ 未完成')}</span></div>
-          {fheError && <div>FHE错误: <span style={{ color: '#f44336' }}>{fheError}</span></div>}
-          <div>cDoge余额: <span style={{ color: '#ffb74d' }}>{cDogeBalance || 'Loading...'}</span></div>
-        </div>
-      </div>
 
       <div className="card">
         <h2>质押 cDoge</h2>
@@ -278,16 +260,7 @@ export default function StakePage() {
           </div>
         )}
 
-        <div style={{ marginTop: '2rem', padding: '1rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
-          <h3>质押流程说明</h3>
-          <ol style={{ textAlign: 'left', color: 'rgba(255, 255, 255, 0.8)' }}>
-            <li>首先点击"授权"按钮，允许合约使用您的 cDoge</li>
-            <li>然后点击"质押"按钮，将 cDoge 质押到合约中</li>
-            <li>质押成功后，前往"借贷"页面可借贷相当于质押价值 50% 的 cUSDT</li>
-            <li>在"资产"页面可以查看您的质押情况和取款</li>
-            <li>所有操作都是隐私的，金额在链上是加密存储的</li>
-          </ol>
-        </div>
+       
       </div>
     </div>
   );

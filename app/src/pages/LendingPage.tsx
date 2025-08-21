@@ -167,17 +167,7 @@ export default function LendingPage() {
           </div>
         )}
 
-        <div style={{ marginTop: '2rem', padding: '1rem', background: 'rgba(255, 255, 255, 0.05)', borderRadius: '8px' }}>
-          <h3>借贷说明</h3>
-          <ul style={{ textAlign: 'left', color: 'rgba(255, 255, 255, 0.8)' }}>
-            <li>您最多可以借贷质押资产价值的 50%</li>
-            <li>借贷的 cUSDT 会直接发送到您的钱包</li>
-            <li>当前测试版本无需支付利息</li>
-            <li>请确保您已经质押了足够的 cDoge 作为抵押</li>
-            <li>借贷金额是加密的，只有您可以查看具体数量</li>
-            <li>您可以在还款页面随时还款 cUSDT</li>
-          </ul>
-        </div>
+       
       </div>
     </div>
   );
