@@ -208,19 +208,62 @@ const TOKEN_ABI = [
 
 export function useContracts() {
   const { address } = useAccount();
-  const { writeContract } = useWriteContract();
+  const { writeContract, error: writeContractError, isPending: isWritePending } = useWriteContract();
+
+  console.log('🔧 useContracts hook state:', {
+    address,
+    writeContractError,
+    isWritePending
+  });
+
+  const parseHex = (proof: any) => {
+    let formattedProof: string
+    if (typeof proof === 'string') {
+      formattedProof = proof.startsWith('0x') ? proof : `0x${proof}`;
+    } else if (proof instanceof Uint8Array) {
+      formattedProof = `0x${Array.from(proof).map(b => b.toString(16).padStart(2, '0')).join('')}`;
+    } else {
+      formattedProof = `0x${proof.toString()}`;
+    }
+    return formattedProof
+  }
 
   const stakeTokens = async (amount: number) => {
-    if (!address) throw new Error('Wallet not connected');
+    console.log('🔑 stakeTokens called with:', { amount, address });
 
-    const encrypted = await encryptValue(amount, CONTRACT_ADDRESSES.ZAMA_LEND, address);
+    if (!address) {
+      console.log('❌ Wallet not connected');
+      throw new Error('Wallet not connected');
+    }
 
-    return writeContract({
-      address: CONTRACT_ADDRESSES.ZAMA_LEND as `0x${string}`,
-      abi: ZAMA_LEND_ABI,
-      functionName: 'deposit',
-      args: [encrypted.handles[0] as unknown as `0x${string}`, encrypted.inputProof as unknown as `0x${string}`],
-    });
+    console.log('🔐 About to encrypt value...');
+    console.log('📋 Contract addresses:', CONTRACT_ADDRESSES);
+
+    try {
+      const encrypted = await encryptValue(amount, CONTRACT_ADDRESSES.ZAMA_LEND, address);
+      console.log('✅ Encryption successful:', {
+        handles: encrypted.handles,
+        inputProof: encrypted.inputProof,
+      });
+
+      console.log('📞 About to call writeContract with:', {
+        address: CONTRACT_ADDRESSES.ZAMA_LEND,
+        functionName: 'deposit',
+        args: [encrypted.handles[0], encrypted.inputProof],
+      });
+
+      writeContract({
+        address: CONTRACT_ADDRESSES.ZAMA_LEND as `0x${string}`,
+        abi: ZAMA_LEND_ABI,
+        functionName: 'deposit',
+        args: [parseHex(encrypted.handles[0]) as `0x${string}`, parseHex(encrypted.inputProof) as `0x${string}`],
+      });
+
+      console.log('🎉 writeContract called - wallet should popup now');
+    } catch (error) {
+      console.error('❌ Error in stakeTokens:', error);
+      throw error;
+    }
   };
 
   const borrowTokens = async (amount: number) => {
@@ -228,7 +271,7 @@ export function useContracts() {
 
     const encrypted = await encryptValue(amount, CONTRACT_ADDRESSES.ZAMA_LEND, address);
 
-    return writeContract({
+    writeContract({
       address: CONTRACT_ADDRESSES.ZAMA_LEND as `0x${string}`,
       abi: ZAMA_LEND_ABI,
       functionName: 'borrow',
@@ -241,7 +284,7 @@ export function useContracts() {
 
     const encrypted = await encryptValue(amount, CONTRACT_ADDRESSES.ZAMA_LEND, address);
 
-    return writeContract({
+    writeContract({
       address: CONTRACT_ADDRESSES.ZAMA_LEND as `0x${string}`,
       abi: ZAMA_LEND_ABI,
       functionName: 'repay',
@@ -254,7 +297,7 @@ export function useContracts() {
 
     const encrypted = await encryptValue(amount, CONTRACT_ADDRESSES.ZAMA_LEND, address);
 
-    return writeContract({
+    writeContract({
       address: CONTRACT_ADDRESSES.ZAMA_LEND as `0x${string}`,
       abi: ZAMA_LEND_ABI,
       functionName: 'withdraw',
@@ -265,11 +308,11 @@ export function useContracts() {
   const approveToken = async (tokenAddress: string, until: number = Math.floor(Date.now() / 1000) + 86400) => {
     if (!address) throw new Error('Wallet not connected');
 
-    return writeContract({
+    writeContract({
       address: tokenAddress as `0x${string}`,
       abi: TOKEN_ABI,
       functionName: 'setOperator',
-      args: [CONTRACT_ADDRESSES.ZAMA_LEND as `0x${string}`, until],
+      args: [CONTRACT_ADDRESSES.ZAMA_LEND as `0x${string}`, until as number],
     });
   };
 

@@ -3,17 +3,28 @@ import { useAccount } from 'wagmi';
 import { useContracts, useTokenBalances } from '@/hooks/useContracts';
 import { CONTRACT_ADDRESSES } from '@/constants/contracts';
 import { useFHE } from '@/contexts/FHEContext';
+import { encryptValue } from '@/utils/fhe';
 
 export default function StakePage() {
-  const { address, isConnected } = useAccount();
-  const { stakeTokens, approveToken } = useContracts();
+  const { address, isConnected, status } = useAccount();
+  const { stakeTokens, borrowTokens, approveToken } = useContracts();
   const { cDogeBalance } = useTokenBalances(['cDoge']);
-  const { isInitialized: fheInitialized, initFHE } = useFHE();
+  const { isInitialized: fheInitialized, initFHE, error: fheError, isInitializing } = useFHE();
+  
+  console.log('🔍 StakePage render:', { 
+    address, 
+    isConnected, 
+    status, 
+    fheInitialized, 
+    fheError,
+    isInitializing
+  });
   
   const [stakeAmount, setStakeAmount] = useState('');
   const [isApproving, setIsApproving] = useState(false);
   const [isStaking, setIsStaking] = useState(false);
   const [message, setMessage] = useState('');
+  const [testingEncryption, setTestingEncryption] = useState(false);
 
   const handleApprove = async () => {
     if (!stakeAmount || !address) return;
@@ -27,8 +38,8 @@ export default function StakePage() {
       setIsApproving(true);
       setMessage('正在授权...');
       
-      const amount = parseInt(stakeAmount);
-      await approveToken(CONTRACT_ADDRESSES.CDOGE, amount);
+      // const amount = parseInt(stakeAmount);
+      await approveToken(CONTRACT_ADDRESSES.CDOGE);
       
       setMessage('授权成功！现在可以进行质押');
     } catch (error) {
@@ -40,32 +51,56 @@ export default function StakePage() {
   };
 
   const handleStake = async () => {
-    if (!stakeAmount || !address) return;
+    console.log('🎯 handleStake called');
+    
+    if (!stakeAmount || !address) {
+      console.log('❌ Missing stakeAmount or address:', { stakeAmount, address });
+      return;
+    }
     
     if (!fheInitialized) {
+      console.log('❌ FHE not initialized');
       setMessage('请先初始化FHE后再进行质押操作');
       return;
     }
+
+    console.log('✅ Starting stake process with amount:', stakeAmount);
 
     try {
       setIsStaking(true);
       setMessage('正在质押...');
       
-      const amount = parseInt(stakeAmount);
-      await stakeTokens(amount);
+      const amount = parseInt(stakeAmount)*1000000;
+      console.log('📊 Parsed amount:', amount);
+      console.log('🔐 About to call stakeTokens function...');
+      
+      const result = await stakeTokens(amount);
+      console.log('✅ stakeTokens result:', result);
       
       setMessage('质押成功！');
       setStakeAmount('');
+      console.log('✅ Staking completed successfully');
     } catch (error) {
-      console.error('Staking failed:', error);
-      setMessage('质押失败，请重试');
+      console.error('❌ Staking failed:', error);
+      console.error('❌ Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        error
+      });
+      setMessage(`质押失败：${error instanceof Error ? error.message : '未知错误'}`);
     } finally {
       setIsStaking(false);
+      console.log('🏁 handleStake completed');
     }
   };
 
   const handleBorrow = async () => {
     if (!stakeAmount) return;
+    
+    if (!fheInitialized) {
+      setMessage('请先初始化FHE后再进行借贷操作');
+      return;
+    }
 
     try {
       setMessage('正在借贷...');
@@ -74,13 +109,33 @@ export default function StakePage() {
       // Borrow 50% of staked value in USDT
       const borrowAmount = Math.floor(amount * 0.5);
       
-      // This would call the borrow function
-      // await borrowTokens(borrowAmount);
+      await borrowTokens(borrowAmount);
       
       setMessage(`借贷 ${borrowAmount} cUSDT 成功！`);
     } catch (error) {
       console.error('Borrowing failed:', error);
       setMessage('借贷失败，请重试');
+    }
+  };
+
+  const testEncryption = async () => {
+    if (!address || !fheInitialized) {
+      setMessage('请先连接钱包并初始化FHE');
+      return;
+    }
+
+    setTestingEncryption(true);
+    try {
+      console.log('🧪 Testing encryption...');
+      const testValue = 100;
+      const encrypted = await encryptValue(testValue, CONTRACT_ADDRESSES.ZAMA_LEND, address);
+      console.log('✅ Encryption test successful:', encrypted);
+      setMessage(`加密测试成功！测试值: ${testValue}`);
+    } catch (error) {
+      console.error('❌ Encryption test failed:', error);
+      setMessage(`加密测试失败: ${error instanceof Error ? error.message : '未知错误'}`);
+    } finally {
+      setTestingEncryption(false);
     }
   };
 
@@ -95,6 +150,26 @@ export default function StakePage() {
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+      {/* Debug Info Panel */}
+      <div style={{
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '8px',
+        padding: '1rem',
+        marginBottom: '1rem',
+        fontSize: '0.875rem',
+        fontFamily: 'monospace'
+      }}>
+        <h4 style={{ margin: '0 0 0.5rem 0', color: '#64b5f6' }}>🔍 调试信息</h4>
+        <div style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+          <div>钱包状态: <span style={{ color: isConnected ? '#4caf50' : '#f44336' }}>{status}</span></div>
+          <div>地址: <span style={{ color: '#64b5f6' }}>{address || 'None'}</span></div>
+          <div>FHE初始化: <span style={{ color: fheInitialized ? '#4caf50' : '#f44336' }}>{fheInitialized ? '✅ 已完成' : (isInitializing ? '⏳ 进行中' : '❌ 未完成')}</span></div>
+          {fheError && <div>FHE错误: <span style={{ color: '#f44336' }}>{fheError}</span></div>}
+          <div>cDoge余额: <span style={{ color: '#ffb74d' }}>{cDogeBalance || 'Loading...'}</span></div>
+        </div>
+      </div>
+
       <div className="card">
         <h2>质押 cDoge</h2>
         <p style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '2rem' }}>
@@ -216,6 +291,21 @@ export default function StakePage() {
           style={{ width: '100%', marginTop: '1rem' }}
         >
           借贷 cUSDT
+        </button>
+
+        {/* Test Encryption Button */}
+        <button
+          className="btn"
+          onClick={testEncryption}
+          disabled={!fheInitialized || testingEncryption}
+          style={{ 
+            width: '100%', 
+            marginTop: '0.5rem', 
+            backgroundColor: '#ff9800',
+            fontSize: '0.875rem'
+          }}
+        >
+          {testingEncryption ? '🧪 测试中...' : '🧪 测试加密功能'}
         </button>
 
         {message && (

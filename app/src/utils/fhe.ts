@@ -62,16 +62,30 @@ export function getFHEVMInstance(): FhevmInstance {
 }
 
 export async function encryptValue(value: number | bigint, contractAddress: string, userAddress: string) {
-  const instance = getFHEVMInstance();
-  const input = instance.createEncryptedInput(contractAddress, userAddress);
+  console.log('🔓 encryptValue called with:', { value, contractAddress, userAddress });
 
-  if (typeof value === 'bigint') {
+  try {
+    const instance = getFHEVMInstance();
+    console.log('✅ Got FHEVM instance:', !!instance);
+
+    const input = instance.createEncryptedInput(contractAddress, userAddress);
+    console.log('✅ Created encrypted input');
+
     input.add64(value);
-  } else {
-    input.add32(value);
-  }
 
-  return await input.encrypt();
+    console.log('🔐 About to encrypt input...');
+    const result = await input.encrypt();
+    console.log('✅ Encryption completed:', {
+      hasHandles: !!result.handles,
+      handlesLength: result.handles?.length,
+      hasInputProof: !!result.inputProof,
+    });
+
+    return result;
+  } catch (error) {
+    console.error('❌ encryptValue failed:', error);
+    throw error;
+  }
 }
 //  await decryptBalance(ciphertext, contractAddress, address, walletClient);
 export async function decryptBalance(
