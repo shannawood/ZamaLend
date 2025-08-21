@@ -115,14 +115,29 @@ contract ZamaLend is SepoliaConfig {
 
         UserPosition storage position = positions[msg.sender];
 
-        // Simple withdrawal - subtract from collateral (no safety check for now)
-        position.collateralAmount = FHE.sub(position.collateralAmount, amount);
+        // collateral check - calculate remaining collateral after withdrawal
+        euint64 newCollateralAmount = FHE.sub(position.collateralAmount, amount);
+
+        // Calculate min required collateral based on borrowed amount
+        // Min collateral = (borrowed * COLLATERAL_RATIO) / (price * PRECISION)
+        euint64 minRequiredCollateral = FHE.div(
+            FHE.mul(position.borrowedAmount, COLLATERAL_RATIO),
+            dogePrice * PRECISION
+        );
+
+        // Check if remaining collateral meets minimum requirement
+        ebool canWithdraw = FHE.ge(newCollateralAmount, minRequiredCollateral);
+
+        // Only proceed if user can withdraw
+        euint64 actualWithdrawAmount = FHE.select(canWithdraw, amount, FHE.asEuint64(0));
+
+        position.collateralAmount = FHE.sub(position.collateralAmount, actualWithdrawAmount);
         FHE.allowThis(position.collateralAmount);
         FHE.allow(position.collateralAmount, msg.sender);
 
-        // Transfer cDoge to user
-        FHE.allowTransient(amount, address(cDoge));
-        cDoge.confidentialTransfer(msg.sender, amount);
+        // Transfer cDoge to user (only the actual withdraw amount)
+        FHE.allowTransient(actualWithdrawAmount, address(cDoge));
+        cDoge.confidentialTransfer(msg.sender, actualWithdrawAmount);
 
         emit Withdrawn(msg.sender, uint64(0)); // Cannot emit encrypted amount
     }
@@ -131,11 +146,11 @@ contract ZamaLend is SepoliaConfig {
         return (positions[user].collateralAmount, positions[user].borrowedAmount);
     }
 
-    function getDogePrice() external view returns (uint256) {
+    function getDogePrice() external view returns (uint64) {
         return dogePrice;
     }
 
-    function getCollateralRatio() external pure returns (uint256) {
+    function getCollateralRatio() external pure returns (uint64) {
         return COLLATERAL_RATIO;
     }
 }
