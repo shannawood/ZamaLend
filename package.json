@@ -80,7 +80,10 @@
     "test": "hardhat test",
     "test:sepolia": "hardhat test --network sepolia",
     "build:ts": "tsc --project tsconfig.json",
-    "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain"
+    "typechain": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
+    "dev:frontend": "cd app && npm run dev",
+    "build:frontend": "cd app && npm run build",
+    "install:frontend": "cd app && npm install"
   },
   "overrides": {
     "ws@>=7.0.0 <7.5.10": ">=7.5.10",
