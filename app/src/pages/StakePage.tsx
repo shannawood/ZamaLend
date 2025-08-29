@@ -30,21 +30,21 @@ export default function StakePage() {
     if (!stakeAmount || !address) return;
     
     if (!fheInitialized) {
-      setMessage('请先初始化FHE后再进行授权操作');
+      setMessage('Please initialize FHE before authorizing');
       return;
     }
 
     try {
       setIsApproving(true);
-      setMessage('正在授权...');
+      setMessage('Authorizing...');
       
       // const amount = parseInt(stakeAmount);
       await approveToken(CONTRACT_ADDRESSES.CDOGE);
       
-      setMessage('授权成功！现在可以进行质押');
+      setMessage('Authorization successful! You can now stake');
     } catch (error) {
       console.error('Approval failed:', error);
-      setMessage('授权失败，请重试');
+      setMessage('Authorization failed, please try again');
     } finally {
       setIsApproving(false);
     }
@@ -60,7 +60,7 @@ export default function StakePage() {
     
     if (!fheInitialized) {
       console.log('❌ FHE not initialized');
-      setMessage('请先初始化FHE后再进行质押操作');
+      setMessage('Please initialize FHE before staking');
       return;
     }
 
@@ -68,7 +68,7 @@ export default function StakePage() {
 
     try {
       setIsStaking(true);
-      setMessage('正在质押...');
+      setMessage('Staking...');
       
       const amount = parseInt(stakeAmount)*1000000;
       console.log('📊 Parsed amount:', amount);
@@ -77,7 +77,7 @@ export default function StakePage() {
       const result = await stakeTokens(amount);
       console.log('✅ stakeTokens result:', result);
       
-      setMessage('质押成功！');
+      setMessage('Staking successful!');
       setStakeAmount('');
       console.log('✅ Staking completed successfully');
     } catch (error) {
@@ -87,7 +87,7 @@ export default function StakePage() {
         stack: error instanceof Error ? error.stack : undefined,
         error
       });
-      setMessage(`质押失败：${error instanceof Error ? error.message : '未知错误'}`);
+      setMessage(`Staking failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsStaking(false);
       console.log('🏁 handleStake completed');
@@ -97,7 +97,7 @@ export default function StakePage() {
 
   const testEncryption = async () => {
     if (!address || !fheInitialized) {
-      setMessage('请先连接钱包并初始化FHE');
+      setMessage('Please connect wallet and initialize FHE first');
       return;
     }
 
@@ -107,10 +107,10 @@ export default function StakePage() {
       const testValue = 100;
       const encrypted = await encryptValue(testValue, CONTRACT_ADDRESSES.ZAMA_LEND, address);
       console.log('✅ Encryption test successful:', encrypted);
-      setMessage(`加密测试成功！测试值: ${testValue}`);
+      setMessage(`Encryption test successful! Test value: ${testValue}`);
     } catch (error) {
       console.error('❌ Encryption test failed:', error);
-      setMessage(`加密测试失败: ${error instanceof Error ? error.message : '未知错误'}`);
+      setMessage(`Encryption test failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setTestingEncryption(false);
     }
@@ -119,8 +119,8 @@ export default function StakePage() {
   if (!isConnected) {
     return (
       <div className="card">
-        <h2>质押 cDoge</h2>
-        <p>请连接您的钱包以进行质押</p>
+        <h2>Stake cDoge</h2>
+        <p>Please connect your wallet to stake</p>
       </div>
     );
   }
@@ -130,9 +130,9 @@ export default function StakePage() {
       {/* Debug Info Panel */}
 
       <div className="card">
-        <h2>质押 cDoge</h2>
+        <h2>Stake cDoge</h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-          质押您的 cDoge 代币作为抵押品，质押后可以在借贷页面借贷 cUSDT
+          Stake your cDoge tokens as collateral. After staking, you can borrow cUSDT on the lending page.
         </p>
 
         {/* FHE Not Initialized Warning */}
@@ -165,9 +165,9 @@ export default function StakePage() {
               !
             </div>
             <div>
-              <h4 style={{ margin: '0 0 0.25rem 0', color: 'var(--color-warning)' }}>需要初始化FHE</h4>
+              <h4 style={{ margin: '0 0 0.25rem 0', color: 'var(--color-warning)' }}>FHE Initialization Required</h4>
               <p style={{ margin: '0', color: 'rgba(245, 158, 11, 0.8)', fontSize: '0.875rem' }}>
-                请先点击右上角的 "Init FHE" 按钮初始化加密系统，然后才能进行质押操作
+                Please click the "Init FHE" button in the top right corner to initialize the encryption system before staking
               </p>
             </div>
             <button
@@ -185,19 +185,19 @@ export default function StakePage() {
                 boxShadow: '0 2px 8px rgba(245, 158, 11, 0.2)'
               }}
             >
-              立即初始化
+              Initialize Now
             </button>
           </div>
         )}
 
         <div className="input-group">
-          <label htmlFor="stakeAmount">质押数量</label>
+          <label htmlFor="stakeAmount">Stake Amount</label>
           <input
             id="stakeAmount"
             type="number"
             value={stakeAmount}
             onChange={(e) => setStakeAmount(e.target.value)}
-            placeholder="输入要质押的 cDoge 数量"
+            placeholder="Enter cDoge amount to stake"
             min="0"
           />
         </div>
@@ -210,13 +210,13 @@ export default function StakePage() {
           border: '1px solid rgba(71, 85, 105, 0.2)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0.5rem 0' }}>
-            <span>当前 cDoge 余额:</span>
+            <span>Current cDoge Balance:</span>
             <span className="balance-encrypted">
-              {cDogeBalance ? `${cDogeBalance.slice(0, 10)}...` : '加载中...'}
+              {cDogeBalance ? `${cDogeBalance.slice(0, 10)}...` : 'Loading...'}
             </span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0.5rem 0' }}>
-            <span>质押数量:</span>
+            <span>Stake Amount:</span>
             <span>{stakeAmount || '0'} cDoge</span>
           </div>
         </div>
@@ -226,20 +226,20 @@ export default function StakePage() {
             className="btn"
             onClick={handleApprove}
             disabled={!stakeAmount || isApproving || !fheInitialized}
-            title={!fheInitialized ? '请先初始化FHE' : undefined}
+            title={!fheInitialized ? 'Please initialize FHE first' : undefined}
             style={{ flex: 1 }}
           >
-            {isApproving ? '授权中...' : '1. 授权'}
+            {isApproving ? 'Approving...' : '1. Approve'}
           </button>
           
           <button
             className="btn"
             onClick={handleStake}
             disabled={!stakeAmount || isStaking || !fheInitialized}
-            title={!fheInitialized ? '请先初始化FHE' : undefined}
+            title={!fheInitialized ? 'Please initialize FHE first' : undefined}
             style={{ flex: 1 }}
           >
-            {isStaking ? '质押中...' : '2. 质押'}
+            {isStaking ? 'Staking...' : '2. Stake'}
           </button>
         </div>
 
@@ -248,7 +248,7 @@ export default function StakePage() {
         
 
         {message && (
-          <div className={`${message.includes('失败') ? 'error' : 'success'}`}>
+          <div className={`${message.includes('failed') || message.includes('Failed') ? 'error' : 'success'}`}>
             {message}
           </div>
         )}

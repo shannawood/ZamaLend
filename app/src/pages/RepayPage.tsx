@@ -62,15 +62,15 @@ export default function RepayPage() {
 
     try {
       setIsApproving(true);
-      setMessage('正在授权...');
+      setMessage('Approving...');
       
       const amount = parseInt(repayAmount);
       await approveToken(CONTRACT_ADDRESSES.CUSDT, amount);
       
-      setMessage('授权成功！现在可以进行还款');
+      setMessage('Approval successful! You can now repay');
     } catch (error) {
       console.error('Approval failed:', error);
-      setMessage('授权失败，请重试');
+      setMessage('Approval failed, please try again');
     } finally {
       setIsApproving(false);
     }
@@ -81,16 +81,16 @@ export default function RepayPage() {
 
     try {
       setIsRepaying(true);
-      setMessage('正在还款...');
+      setMessage('Repaying...');
       
       const amount = parseInt(repayAmount);
       await repayTokens(amount);
       
-      setMessage('还款成功！');
+      setMessage('Repayment successful!');
       setRepayAmount('');
     } catch (error) {
       console.error('Repayment failed:', error);
-      setMessage('还款失败，请重试');
+      setMessage('Repayment failed, please try again');
     } finally {
       setIsRepaying(false);
     }
@@ -105,8 +105,8 @@ export default function RepayPage() {
   if (!isConnected) {
     return (
       <div className="card">
-        <h2>还款 cUSDT</h2>
-        <p>请连接您的钱包以进行还款</p>
+        <h2>Repay cUSDT</h2>
+        <p>Please connect your wallet to repay</p>
       </div>
     );
   }
@@ -114,21 +114,21 @@ export default function RepayPage() {
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto' }}>
       <div className="card">
-        <h2>还款 cUSDT</h2>
+        <h2>Repay cUSDT</h2>
         <p style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '2rem' }}>
-          偿还您借贷的 cUSDT，释放质押的 cDoge
+          Repay your borrowed cUSDT to release staked cDoge
         </p>
 
         {/* Current Status */}
         <div className="stats-grid" style={{ gridTemplateColumns: '1fr 1fr', marginBottom: '2rem' }}>
           <div className="stat-card">
-            <h3>借贷的 cUSDT</h3>
+            <h3>Borrowed cUSDT</h3>
             <div className="balance-encrypted">
-              加密: {borrowedAmount ? `${borrowedAmount.slice(0, 10)}...` : '加载中...'}
+              Encrypted: {borrowedAmount ? `${borrowedAmount.slice(0, 10)}...` : 'Loading...'}
             </div>
             {decryptedAmounts.borrowed !== undefined && (
               <div className="stat-value">
-                {decryptedAmounts.borrowed || '解密失败'}
+                {decryptedAmounts.borrowed || 'Decryption Failed'}
               </div>
             )}
             <button
@@ -137,18 +137,18 @@ export default function RepayPage() {
               disabled={!borrowedAmount || decryptingAmounts.borrowed}
               style={{ marginTop: '1rem' }}
             >
-              {decryptingAmounts.borrowed ? '解密中...' : '解密'}
+              {decryptingAmounts.borrowed ? 'Decrypting...' : 'Decrypt'}
             </button>
           </div>
 
           <div className="stat-card">
-            <h3>cUSDT 余额</h3>
+            <h3>cUSDT Balance</h3>
             <div className="balance-encrypted">
-              加密: {cUSDTBalance ? `${cUSDTBalance.slice(0, 10)}...` : '加载中...'}
+              Encrypted: {cUSDTBalance ? `${cUSDTBalance.slice(0, 10)}...` : 'Loading...'}
             </div>
             {decryptedAmounts.balance !== undefined && (
               <div className="stat-value">
-                {decryptedAmounts.balance || '解密失败'}
+                {decryptedAmounts.balance || 'Decryption Failed'}
               </div>
             )}
             <button
@@ -157,20 +157,20 @@ export default function RepayPage() {
               disabled={!cUSDTBalance || decryptingAmounts.balance}
               style={{ marginTop: '1rem' }}
             >
-              {decryptingAmounts.balance ? '解密中...' : '解密'}
+              {decryptingAmounts.balance ? 'Decrypting...' : 'Decrypt'}
             </button>
           </div>
         </div>
 
         {/* Repayment Form */}
         <div className="input-group">
-          <label htmlFor="repayAmount">还款数量</label>
+          <label htmlFor="repayAmount">Repay Amount</label>
           <input
             id="repayAmount"
             type="number"
             value={repayAmount}
             onChange={(e) => setRepayAmount(e.target.value)}
-            placeholder="输入要还款的 cUSDT 数量"
+            placeholder="Enter cUSDT amount to repay"
             min="0"
           />
         </div>
@@ -182,7 +182,7 @@ export default function RepayPage() {
             disabled={!decryptedAmounts.borrowed}
             style={{ flex: 1 }}
           >
-            全部还清
+            Repay All
           </button>
         </div>
 
@@ -193,19 +193,19 @@ export default function RepayPage() {
           margin: '1rem 0'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0.5rem 0' }}>
-            <span>当前借贷:</span>
-            <span>{decryptedAmounts.borrowed || '请先解密'} cUSDT</span>
+            <span>Current Debt:</span>
+            <span>{decryptedAmounts.borrowed || 'Please decrypt first'} cUSDT</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0.5rem 0' }}>
-            <span>还款数量:</span>
+            <span>Repay Amount:</span>
             <span>{repayAmount || '0'} cUSDT</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0.5rem 0' }}>
-            <span>剩余借贷:</span>
+            <span>Remaining Debt:</span>
             <span>
               {decryptedAmounts.borrowed && repayAmount 
                 ? Math.max(0, parseInt(decryptedAmounts.borrowed) - parseInt(repayAmount))
-                : '计算中...'} cUSDT
+                : 'Calculating...'} cUSDT
             </span>
           </div>
         </div>
@@ -217,7 +217,7 @@ export default function RepayPage() {
             disabled={!repayAmount || isApproving}
             style={{ flex: 1 }}
           >
-            {isApproving ? '授权中...' : '1. 授权'}
+            {isApproving ? 'Approving...' : '1. Approve'}
           </button>
           
           <button
@@ -226,12 +226,12 @@ export default function RepayPage() {
             disabled={!repayAmount || isRepaying}
             style={{ flex: 1 }}
           >
-            {isRepaying ? '还款中...' : '2. 还款'}
+            {isRepaying ? 'Repaying...' : '2. Repay'}
           </button>
         </div>
 
         {message && (
-          <div className={`${message.includes('失败') ? 'error' : 'success'}`}>
+          <div className={`${message.includes('failed') || message.includes('Failed') ? 'error' : 'success'}`}>
             {message}
           </div>
         )}

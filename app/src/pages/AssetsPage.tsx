@@ -37,7 +37,7 @@ export default function AssetsPage() {
     if (!address || !walletClient) return;
     
     if (!fheInitialized) {
-      alert('请先初始化FHE后再进行解密操作');
+      alert('Please initialize FHE before decryption');
       return;
     }
     
@@ -76,7 +76,7 @@ export default function AssetsPage() {
       setDecryptedAmounts(prev => ({ ...prev, [type]: decrypted }));
     } catch (error) {
       console.error(`Failed to decrypt ${type} amount:`, error);
-      alert(`解密${type}余额失败，请确保FHE已正确初始化`);
+      alert(`Failed to decrypt ${type} balance, please ensure FHE is correctly initialized`);
     } finally {
       setDecryptingAmounts(prev => ({ ...prev, [type]: false }));
     }
@@ -87,16 +87,16 @@ export default function AssetsPage() {
 
     try {
       setIsWithdrawing(true);
-      setMessage('正在取款...');
+      setMessage('Withdrawing...');
       
       const amount = parseInt(withdrawAmount);
       await withdrawTokens(amount);
       
-      setMessage('取款成功！');
+      setMessage('Withdrawal successful!');
       setWithdrawAmount('');
     } catch (error) {
       console.error('Withdrawal failed:', error);
-      setMessage('取款失败，请重试');
+      setMessage('Withdrawal failed, please try again');
     } finally {
       setIsWithdrawing(false);
     }
@@ -105,8 +105,8 @@ export default function AssetsPage() {
   if (!isConnected) {
     return (
       <div className="card">
-        <h2>我的资产</h2>
-        <p>请连接您的钱包以查看资产和钱包余额</p>
+        <h2>My Assets</h2>
+        <p>Please connect your wallet to view assets and wallet balance</p>
       </div>
     );
   }
@@ -117,9 +117,9 @@ export default function AssetsPage() {
         {/* Left Column - Wallet Balance */}
         <div style={{ flex: '1', minWidth: '400px' }}>
           <div className="card" style={{ height: 'fit-content', padding: '1.25rem' }}>
-            <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: '#4ade80' }}>💰 钱包余额</h2>
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: '#4ade80' }}>💰 Wallet Balance</h2>
             <p style={{ color: 'rgba(255, 255, 255, 0.7)', marginBottom: '1rem', fontSize: '0.85rem' }}>
-              您的加密代币余额，点击解密查看明文
+              Your encrypted token balances, click decrypt to view plaintext
             </p>
         
             {/* FHE Not Initialized Warning */}
@@ -150,9 +150,9 @@ export default function AssetsPage() {
                   !
                 </div>
                 <div style={{ flex: 1 }}>
-                  <h4 style={{ margin: '0 0 0.25rem 0', color: '#fbbf24', fontSize: '0.8rem' }}>需要初始化FHE</h4>
+                  <h4 style={{ margin: '0 0 0.25rem 0', color: '#fbbf24', fontSize: '0.8rem' }}>FHE Initialization Required</h4>
                   <p style={{ margin: '0', color: 'rgba(251, 191, 36, 0.8)', fontSize: '0.7rem' }}>
-                    请先初始化加密系统，然后才能解密查看余额明文
+                    Please initialize the encryption system first, then decrypt to view balance plaintext
                   </p>
                 </div>
                 <button
@@ -168,7 +168,7 @@ export default function AssetsPage() {
                     flexShrink: 0
                   }}
                 >
-                  初始化
+                  Initialize
                 </button>
               </div>
             )}
@@ -176,14 +176,14 @@ export default function AssetsPage() {
             {/* Show loading state */}
             {isLoading && (
               <div style={{ textAlign: 'center', color: 'rgba(255, 255, 255, 0.7)', marginBottom: '0.75rem', fontSize: '0.8rem' }}>
-                <p>正在加载余额...</p>
+                <p>Loading balances...</p>
               </div>
             )}
 
             {/* Show errors if any */}
             {(errors.cDoge || errors.cUSDT) && (
               <div style={{ backgroundColor: 'rgba(255, 0, 0, 0.1)', padding: '0.5rem', borderRadius: '4px', marginBottom: '0.75rem' }}>
-                <h4 style={{ margin: '0 0 0.25rem 0', color: '#ff4444', fontSize: '0.8rem' }}>加载错误</h4>
+                <h4 style={{ margin: '0 0 0.25rem 0', color: '#ff4444', fontSize: '0.8rem' }}>Loading Error</h4>
                 {errors.cDoge && <p style={{ margin: '0.125rem 0', color: '#ff8888', fontSize: '0.7rem' }}>cDoge: {errors.cDoge.message}</p>}
                 {errors.cUSDT && <p style={{ margin: '0.125rem 0', color: '#ff8888', fontSize: '0.7rem' }}>cUSDT: {errors.cUSDT.message}</p>}
               </div>
@@ -206,15 +206,15 @@ export default function AssetsPage() {
                     {cDogeBalance 
                       ? `${cDogeBalance.slice(0, 10)}...` 
                       : isLoading 
-                        ? '加载中...' 
+                        ? 'Loading...' 
                         : errors.cDoge 
-                          ? '加载失败' 
-                          : '无余额'
+                          ? 'Load Failed' 
+                          : 'No Balance'
                     }
                   </div>
                   {decryptedAmounts.cDoge !== undefined && (
                     <div className="balance-decrypted" style={{ fontSize: '0.9rem', fontWeight: '600', color: '#4ade80', marginTop: '0.25rem' }}>
-                      💰 {decryptedAmounts.cDoge || '解密失败'}
+                      💰 {decryptedAmounts.cDoge || 'Decryption Failed'}
                     </div>
                   )}
                 </div>
@@ -222,10 +222,10 @@ export default function AssetsPage() {
                   className="btn btn-secondary"
                   onClick={() => handleDecryptAmount('cDoge')}
                   disabled={!cDogeBalance || decryptingAmounts.cDoge || isLoading || !fheInitialized}
-                  title={!fheInitialized ? '请先初始化FHE' : undefined}
+                  title={!fheInitialized ? 'Please initialize FHE first' : undefined}
                   style={{ fontSize: '0.75rem', padding: '0.5rem 0.75rem', minWidth: '60px' }}
                 >
-                  {decryptingAmounts.cDoge ? '...' : '解密'}
+                  {decryptingAmounts.cDoge ? '...' : 'Decrypt'}
                 </button>
               </div>
 
@@ -245,15 +245,15 @@ export default function AssetsPage() {
                     {cUSDTBalance 
                       ? `${cUSDTBalance.slice(0, 10)}...` 
                       : isLoading 
-                        ? '加载中...' 
+                        ? 'Loading...' 
                         : errors.cUSDT 
-                          ? '加载失败' 
-                          : '无余额'
+                          ? 'Load Failed' 
+                          : 'No Balance'
                     }
                   </div>
                   {decryptedAmounts.cUSDT !== undefined && (
                     <div className="balance-decrypted" style={{ fontSize: '0.9rem', fontWeight: '600', color: '#4ade80', marginTop: '0.25rem' }}>
-                      💰 {decryptedAmounts.cUSDT || '解密失败'}
+                      💰 {decryptedAmounts.cUSDT || 'Decryption Failed'}
                     </div>
                   )}
                 </div>
@@ -261,10 +261,10 @@ export default function AssetsPage() {
                   className="btn btn-secondary"
                   onClick={() => handleDecryptAmount('cUSDT')}
                   disabled={!cUSDTBalance || decryptingAmounts.cUSDT || isLoading || !fheInitialized}
-                  title={!fheInitialized ? '请先初始化FHE' : undefined}
+                  title={!fheInitialized ? 'Please initialize FHE first' : undefined}
                   style={{ fontSize: '0.75rem', padding: '0.5rem 0.75rem', minWidth: '60px' }}
                 >
-                  {decryptingAmounts.cUSDT ? '...' : '解密'}
+                  {decryptingAmounts.cUSDT ? '...' : 'Decrypt'}
                 </button>
               </div>
             </div>
@@ -274,9 +274,9 @@ export default function AssetsPage() {
         {/* Right Column - Assets Overview */}
         <div style={{ flex: '1', minWidth: '400px' }}>
           <div className="card" style={{ padding: '1.25rem' }}>
-            <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: '#a78bfa' }}>📊 资产概览</h2>
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: '#a78bfa' }}>📊 Assets Overview</h2>
             <p style={{ color: 'rgba(255, 255, 255, 0.7)', marginBottom: '1rem', fontSize: '0.85rem' }}>
-              质押、借贷和可用额度
+              Staking, lending, and available credit
             </p>
 
             <div style={{ display: 'grid', gap: '0.75rem' }}>
@@ -291,13 +291,13 @@ export default function AssetsPage() {
                 alignItems: 'center'
               }}>
                 <div style={{ flex: 1 }}>
-                  <h3 style={{ fontSize: '1rem', margin: '0 0 0.25rem 0', color: '#fbbf24' }}>🔒 质押的 cDoge</h3>
+                  <h3 style={{ fontSize: '1rem', margin: '0 0 0.25rem 0', color: '#fbbf24' }}>🔒 Staked cDoge</h3>
                   <div className="balance-encrypted" style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.6)' }}>
-                    {stakedAmount ? `${stakedAmount.slice(0, 10)}...` : '加载中...'}
+                    {stakedAmount ? `${stakedAmount.slice(0, 10)}...` : 'Loading...'}
                   </div>
                   {decryptedAmounts.staked !== undefined && (
                     <div className="stat-value" style={{ fontSize: '0.9rem', fontWeight: '600', color: '#4ade80', marginTop: '0.25rem' }}>
-                      📈 {decryptedAmounts.staked || '解密失败'}
+                      📈 {decryptedAmounts.staked || 'Decryption Failed'}
                     </div>
                   )}
                 </div>
@@ -307,7 +307,7 @@ export default function AssetsPage() {
                   disabled={!stakedAmount || decryptingAmounts.staked}
                   style={{ fontSize: '0.75rem', padding: '0.5rem 0.75rem', minWidth: '60px' }}
                 >
-                  {decryptingAmounts.staked ? '...' : '解密'}
+                  {decryptingAmounts.staked ? '...' : 'Decrypt'}
                 </button>
               </div>
 
@@ -322,13 +322,13 @@ export default function AssetsPage() {
                 alignItems: 'center'
               }}>
                 <div style={{ flex: 1 }}>
-                  <h3 style={{ fontSize: '1rem', margin: '0 0 0.25rem 0', color: '#ef4444' }}>💳 借贷的 cUSDT</h3>
+                  <h3 style={{ fontSize: '1rem', margin: '0 0 0.25rem 0', color: '#ef4444' }}>💳 Borrowed cUSDT</h3>
                   <div className="balance-encrypted" style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.6)' }}>
-                    {borrowedAmount ? `${borrowedAmount.slice(0, 10)}...` : '加载中...'}
+                    {borrowedAmount ? `${borrowedAmount.slice(0, 10)}...` : 'Loading...'}
                   </div>
                   {decryptedAmounts.borrowed !== undefined && (
                     <div className="stat-value" style={{ fontSize: '0.9rem', fontWeight: '600', color: '#4ade80', marginTop: '0.25rem' }}>
-                      📉 {decryptedAmounts.borrowed || '解密失败'}
+                      📉 {decryptedAmounts.borrowed || 'Decryption Failed'}
                     </div>
                   )}
                 </div>
@@ -338,7 +338,7 @@ export default function AssetsPage() {
                   disabled={!borrowedAmount || decryptingAmounts.borrowed}
                   style={{ fontSize: '0.75rem', padding: '0.5rem 0.75rem', minWidth: '60px' }}
                 >
-                  {decryptingAmounts.borrowed ? '...' : '解密'}
+                  {decryptingAmounts.borrowed ? '...' : 'Decrypt'}
                 </button>
               </div>
 
@@ -382,9 +382,9 @@ export default function AssetsPage() {
               border: '1px solid rgba(34, 211, 238, 0.2)',
               borderRadius: '8px'
             }}>
-              <h3 style={{ fontSize: '1rem', margin: '0 0 0.5rem 0', color: '#22d3ee' }}>💸 取款 cDoge</h3>
+              <h3 style={{ fontSize: '1rem', margin: '0 0 0.5rem 0', color: '#22d3ee' }}>💸 Withdraw cDoge</h3>
               <p style={{ color: 'rgba(255, 255, 255, 0.7)', marginBottom: '0.75rem', fontSize: '0.8rem' }}>
-                从质押中取出代币
+                Withdraw tokens from staking
               </p>
 
               <div className="input-group" style={{ marginBottom: '0.75rem' }}>
@@ -393,7 +393,7 @@ export default function AssetsPage() {
                   type="number"
                   value={withdrawAmount}
                   onChange={(e) => setWithdrawAmount(e.target.value)}
-                  placeholder="输入要取款的数量"
+                  placeholder="Enter withdrawal amount"
                   min="0"
                   style={{ 
                     padding: '0.5rem',
@@ -418,11 +418,11 @@ export default function AssetsPage() {
                   color: '#0f172a'
                 }}
               >
-                {isWithdrawing ? '取款中...' : '确认取款'}
+                {isWithdrawing ? 'Withdrawing...' : 'Confirm Withdrawal'}
               </button>
 
               {message && (
-                <div className={`${message.includes('失败') ? 'error' : 'success'}`} style={{ 
+                <div className={`${message.includes('failed') || message.includes('Failed') ? 'error' : 'success'}`} style={{ 
                   marginTop: '0.5rem',
                   fontSize: '0.8rem'
                 }}>
@@ -442,7 +442,7 @@ export default function AssetsPage() {
         borderRadius: '8px',
         border: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
-        <h3 style={{ fontSize: '0.9rem', color: '#a78bfa', marginBottom: '0.5rem' }}>ℹ️ 功能说明</h3>
+        <h3 style={{ fontSize: '0.9rem', color: '#a78bfa', marginBottom: '0.5rem' }}>ℹ️ Feature Description</h3>
         <div style={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
@@ -450,12 +450,12 @@ export default function AssetsPage() {
           fontSize: '0.75rem',
           color: 'rgba(255, 255, 255, 0.7)'
         }}>
-          <div>• <strong>钱包余额</strong>：您的 cDoge 和 cUSDT 加密余额</div>
-          <div>• <strong>质押资产</strong>：已质押到协议中的 cDoge 数量</div>
-          <div>• <strong>借贷金额</strong>：当前借贷的 cUSDT 数量</div>
-          <div>• <strong>可借贷额度</strong>：基于质押资产的剩余借贷额度</div>
-          <div>• <strong>安全规则</strong>：取款时确保借贷比例不超过 50%</div>
-          <div>• <strong>隐私保护</strong>：所有金额都是加密存储的</div>
+          <div>• <strong>Wallet Balance</strong>: Your encrypted cDoge and cUSDT balances</div>
+          <div>• <strong>Staked Assets</strong>: Amount of cDoge staked in the protocol</div>
+          <div>• <strong>Borrowed Amount</strong>: Current amount of borrowed cUSDT</div>
+          <div>• <strong>Available Credit</strong>: Remaining borrowing capacity based on staked assets</div>
+          <div>• <strong>Safety Rules</strong>: Ensure borrowing ratio doesn't exceed 50% when withdrawing</div>
+          <div>• <strong>Privacy Protection</strong>: All amounts are stored encrypted</div>
         </div>
       </div>
     </div>

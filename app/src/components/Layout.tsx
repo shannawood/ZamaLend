@@ -12,10 +12,10 @@ export default function Layout({ children }: LayoutProps) {
   const { isInitialized, isInitializing, error, initFHE, resetError } = useFHE();
 
   const navItems = [
-    { path: '/assets', label: '资产' },
-    { path: '/stake', label: '质押' },
-    { path: '/lending', label: '借贷' },
-    { path: '/repay', label: '还款' },
+    { path: '/assets', label: 'Assets' },
+    { path: '/stake', label: 'Stake' },
+    { path: '/lending', label: 'Lend' },
+    { path: '/repay', label: 'Repay' },
   ];
 
   return (
@@ -56,7 +56,7 @@ export default function Layout({ children }: LayoutProps) {
                   borderRadius: '50%',
                   boxShadow: '0 0 8px rgba(16, 185, 129, 0.4)'
                 }} />
-                FHE已初始化
+                FHE Initialized
               </span>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -74,7 +74,7 @@ export default function Layout({ children }: LayoutProps) {
                     borderRadius: '50%',
                     boxShadow: isInitializing ? '0 0 8px rgba(245, 158, 11, 0.4)' : '0 0 8px rgba(239, 68, 68, 0.4)'
                   }} />
-                  {isInitializing ? 'FHE初始化中...' : 'FHE未初始化'}
+                  {isInitializing ? 'Initializing FHE...' : 'FHE Not Initialized'}
                 </span>
                 <button
                   onClick={initFHE}
@@ -103,7 +103,7 @@ export default function Layout({ children }: LayoutProps) {
                     }
                   }}
                 >
-                  {isInitializing ? '初始化中...' : 'Init FHE'}
+                  {isInitializing ? 'Initializing...' : 'Init FHE'}
                 </button>
               </div>
             )}
@@ -128,7 +128,7 @@ export default function Layout({ children }: LayoutProps) {
           backdropFilter: 'blur(10px)'
         }}>
           <div>
-            <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--color-danger)' }}>FHE初始化失败</h4>
+            <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--color-danger)' }}>FHE Initialization Failed</h4>
             <p style={{ margin: '0', color: 'rgba(239, 68, 68, 0.8)', fontSize: '0.875rem' }}>
               {error}
             </p>
@@ -149,7 +149,7 @@ export default function Layout({ children }: LayoutProps) {
                 boxShadow: '0 2px 8px rgba(239, 68, 68, 0.2)'
               }}
             >
-              重试
+              Retry
             </button>
             <button
               onClick={resetError}
@@ -164,7 +164,7 @@ export default function Layout({ children }: LayoutProps) {
                 transition: 'all 0.3s ease'
               }}
             >
-              关闭
+              Close
             </button>
           </div>
         </div>
@@ -193,7 +193,7 @@ export default function Layout({ children }: LayoutProps) {
         color: 'var(--text-muted)',
         borderTop: '1px solid rgba(71, 85, 105, 0.2)'
       }}>
-        <p>基于 Zama FHE 技术的隐私借贷协议</p>
+        <p>Privacy Lending Protocol based on Zama FHE Technology</p>
       </footer>
     </div>
   );

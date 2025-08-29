@@ -17,22 +17,22 @@ export default function LendingPage() {
     if (!borrowAmount || !address) return;
     
     if (!fheInitialized) {
-      setMessage('请先初始化FHE后再进行借贷操作');
+      setMessage('Please initialize FHE before borrowing');
       return;
     }
 
     try {
       setIsBorrowing(true);
-      setMessage('正在借贷...');
+      setMessage('Borrowing...');
       
       const amount = parseInt(borrowAmount) * 1000000;
       await borrowTokens(amount);
       
-      setMessage(`借贷 ${borrowAmount} cUSDT 成功！`);
+      setMessage(`Successfully borrowed ${borrowAmount} cUSDT!`);
       setBorrowAmount('');
     } catch (error) {
       console.error('Borrowing failed:', error);
-      setMessage(`借贷失败：${error instanceof Error ? error.message : '未知错误'}`);
+      setMessage(`Borrowing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsBorrowing(false);
     }
@@ -41,8 +41,8 @@ export default function LendingPage() {
   if (!isConnected) {
     return (
       <div className="card">
-        <h2>借贷 cUSDT</h2>
-        <p>请连接您的钱包以进行借贷</p>
+        <h2>Borrow cUSDT</h2>
+        <p>Please connect your wallet to borrow</p>
       </div>
     );
   }
@@ -50,9 +50,9 @@ export default function LendingPage() {
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto' }}>
       <div className="card">
-        <h2>借贷 cUSDT</h2>
+        <h2>Borrow cUSDT</h2>
         <p style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '2rem' }}>
-          基于您的质押资产借贷 cUSDT，最多可借贷质押价值的 50%
+          Borrow cUSDT based on your staked assets, up to 50% of staked value
         </p>
 
         {/* FHE Not Initialized Warning */}
@@ -83,9 +83,9 @@ export default function LendingPage() {
               !
             </div>
             <div>
-              <h4 style={{ margin: '0 0 0.25rem 0', color: '#fbbf24' }}>需要初始化FHE</h4>
+              <h4 style={{ margin: '0 0 0.25rem 0', color: '#fbbf24' }}>FHE Initialization Required</h4>
               <p style={{ margin: '0', color: 'rgba(251, 191, 36, 0.8)', fontSize: '0.875rem' }}>
-                请先点击右上角的 "Init FHE" 按钮初始化加密系统，然后才能进行借贷操作
+                Please click the "Init FHE" button in the top right corner to initialize the encryption system before borrowing
               </p>
             </div>
             <button
@@ -101,7 +101,7 @@ export default function LendingPage() {
                 flexShrink: 0
               }}
             >
-              立即初始化
+              Initialize Now
             </button>
           </div>
         )}
@@ -114,23 +114,23 @@ export default function LendingPage() {
           borderRadius: '8px',
           marginBottom: '2rem'
         }}>
-          <h3 style={{ margin: '0 0 0.5rem 0', color: '#22c55e' }}>可借贷额度</h3>
+          <h3 style={{ margin: '0 0 0.5rem 0', color: '#22c55e' }}>Available Credit</h3>
           <div className="balance-encrypted" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-            加密余额: {availableToBorrow ? `${availableToBorrow.slice(0, 10)}...` : '加载中...'}
+            Encrypted balance: {availableToBorrow ? `${availableToBorrow.slice(0, 10)}...` : 'Loading...'}
           </div>
           <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.875rem', color: 'rgba(34, 197, 94, 0.8)' }}>
-            💡 这是基于您的质押资产计算出的最大可借贷金额
+            💡 This is the maximum borrowable amount calculated based on your staked assets
           </p>
         </div>
 
         <div className="input-group">
-          <label htmlFor="borrowAmount">借贷数量</label>
+          <label htmlFor="borrowAmount">Borrow Amount</label>
           <input
             id="borrowAmount"
             type="number"
             value={borrowAmount}
             onChange={(e) => setBorrowAmount(e.target.value)}
-            placeholder="输入要借贷的 cUSDT 数量"
+            placeholder="Enter cUSDT amount to borrow"
             min="0"
           />
         </div>
@@ -142,12 +142,12 @@ export default function LendingPage() {
           margin: '1rem 0'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0.5rem 0' }}>
-            <span>借贷数量:</span>
+            <span>Borrow Amount:</span>
             <span>{borrowAmount || '0'} cUSDT</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0.5rem 0' }}>
-            <span>借贷利率:</span>
-            <span style={{ color: '#22c55e' }}>0% (测试版)</span>
+            <span>Interest Rate:</span>
+            <span style={{ color: '#22c55e' }}>0% (Beta)</span>
           </div>
         </div>
 
@@ -155,14 +155,14 @@ export default function LendingPage() {
           className="btn"
           onClick={handleBorrow}
           disabled={!borrowAmount || isBorrowing || !fheInitialized}
-          title={!fheInitialized ? '请先初始化FHE' : undefined}
+          title={!fheInitialized ? 'Please initialize FHE first' : undefined}
           style={{ width: '100%', marginTop: '2rem' }}
         >
-          {isBorrowing ? '借贷中...' : '借贷 cUSDT'}
+          {isBorrowing ? 'Borrowing...' : 'Borrow cUSDT'}
         </button>
 
         {message && (
-          <div className={`${message.includes('失败') ? 'error' : 'success'}`}>
+          <div className={`${message.includes('failed') || message.includes('Failed') ? 'error' : 'success'}`}>
             {message}
           </div>
         )}
