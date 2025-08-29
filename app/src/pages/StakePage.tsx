@@ -131,26 +131,27 @@ export default function StakePage() {
 
       <div className="card">
         <h2>质押 cDoge</h2>
-        <p style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '2rem' }}>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
           质押您的 cDoge 代币作为抵押品，质押后可以在借贷页面借贷 cUSDT
         </p>
 
         {/* FHE Not Initialized Warning */}
         {!fheInitialized && (
           <div style={{
-            backgroundColor: 'rgba(251, 191, 36, 0.1)',
-            border: '1px solid rgba(251, 191, 36, 0.3)',
-            borderRadius: '8px',
+            background: 'rgba(245, 158, 11, 0.1)',
+            border: '1px solid rgba(245, 158, 11, 0.3)',
+            borderRadius: '12px',
             padding: '1rem',
             marginBottom: '2rem',
             display: 'flex',
             alignItems: 'center',
-            gap: '1rem'
+            gap: '1rem',
+            backdropFilter: 'blur(10px)'
           }}>
             <div style={{ 
               width: '24px', 
               height: '24px', 
-              backgroundColor: '#fbbf24', 
+              backgroundColor: 'var(--color-warning)', 
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
@@ -158,13 +159,14 @@ export default function StakePage() {
               color: 'white',
               fontSize: '14px',
               fontWeight: 'bold',
-              flexShrink: 0
+              flexShrink: 0,
+              boxShadow: '0 0 8px rgba(245, 158, 11, 0.4)'
             }}>
               !
             </div>
             <div>
-              <h4 style={{ margin: '0 0 0.25rem 0', color: '#fbbf24' }}>需要初始化FHE</h4>
-              <p style={{ margin: '0', color: 'rgba(251, 191, 36, 0.8)', fontSize: '0.875rem' }}>
+              <h4 style={{ margin: '0 0 0.25rem 0', color: 'var(--color-warning)' }}>需要初始化FHE</h4>
+              <p style={{ margin: '0', color: 'rgba(245, 158, 11, 0.8)', fontSize: '0.875rem' }}>
                 请先点击右上角的 "Init FHE" 按钮初始化加密系统，然后才能进行质押操作
               </p>
             </div>
@@ -173,12 +175,14 @@ export default function StakePage() {
               style={{
                 padding: '0.5rem 1rem',
                 fontSize: '0.875rem',
-                backgroundColor: '#fbbf24',
+                backgroundColor: 'var(--color-warning)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '6px',
+                borderRadius: '8px',
                 cursor: 'pointer',
-                flexShrink: 0
+                flexShrink: 0,
+                transition: 'all 0.3s ease',
+                boxShadow: '0 2px 8px rgba(245, 158, 11, 0.2)'
               }}
             >
               立即初始化
@@ -199,10 +203,11 @@ export default function StakePage() {
         </div>
 
         <div style={{ 
-          background: 'rgba(255, 255, 255, 0.05)', 
-          padding: '1rem', 
-          borderRadius: '8px',
-          margin: '1rem 0'
+          background: 'var(--surface-secondary)', 
+          padding: '1.25rem', 
+          borderRadius: '12px',
+          margin: '1rem 0',
+          border: '1px solid rgba(71, 85, 105, 0.2)'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0.5rem 0' }}>
             <span>当前 cDoge 余额:</span>

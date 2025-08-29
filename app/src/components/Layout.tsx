@@ -25,17 +25,16 @@ export default function Layout({ children }: LayoutProps) {
         justifyContent: 'space-between', 
         alignItems: 'center', 
         padding: '1rem 2rem',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(10px)',
+        background: 'var(--surface-primary)',
+        backdropFilter: 'blur(20px)',
         marginBottom: '2rem'
       }}>
-        <h1 style={{ 
-          margin: 0, 
-          fontSize: '2rem', 
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent'
-        }}>
+        <h1 className="app-title"
+          style={{ 
+            margin: 0, 
+            fontSize: '2rem', 
+            fontWeight: '700'
+          }}>
           ZamaLend
         </h1>
         
@@ -44,7 +43,7 @@ export default function Layout({ children }: LayoutProps) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             {isInitialized ? (
               <span style={{ 
-                color: '#4ade80', 
+                color: 'var(--color-success)', 
                 fontSize: '0.875rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -53,15 +52,16 @@ export default function Layout({ children }: LayoutProps) {
                 <span style={{ 
                   width: '8px', 
                   height: '8px', 
-                  backgroundColor: '#4ade80', 
-                  borderRadius: '50%' 
+                  backgroundColor: 'var(--color-success)', 
+                  borderRadius: '50%',
+                  boxShadow: '0 0 8px rgba(16, 185, 129, 0.4)'
                 }} />
                 FHE已初始化
               </span>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ 
-                  color: isInitializing ? '#fbbf24' : '#f87171', 
+                  color: isInitializing ? 'var(--color-warning)' : 'var(--color-danger)', 
                   fontSize: '0.875rem',
                   display: 'flex',
                   alignItems: 'center',
@@ -70,8 +70,9 @@ export default function Layout({ children }: LayoutProps) {
                   <span style={{ 
                     width: '8px', 
                     height: '8px', 
-                    backgroundColor: isInitializing ? '#fbbf24' : '#f87171', 
-                    borderRadius: '50%' 
+                    backgroundColor: isInitializing ? 'var(--color-warning)' : 'var(--color-danger)', 
+                    borderRadius: '50%',
+                    boxShadow: isInitializing ? '0 0 8px rgba(245, 158, 11, 0.4)' : '0 0 8px rgba(239, 68, 68, 0.4)'
                   }} />
                   {isInitializing ? 'FHE初始化中...' : 'FHE未初始化'}
                 </span>
@@ -81,21 +82,24 @@ export default function Layout({ children }: LayoutProps) {
                   style={{
                     padding: '0.5rem 1rem',
                     fontSize: '0.875rem',
-                    backgroundColor: isInitializing ? '#6b7280' : '#3b82f6',
+                    backgroundColor: isInitializing ? 'var(--surface-secondary)' : 'var(--color-primary)',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     cursor: isInitializing ? 'not-allowed' : 'pointer',
-                    transition: 'background-color 0.2s',
+                    transition: 'all 0.3s ease',
+                    boxShadow: isInitializing ? 'none' : '0 2px 8px rgba(14, 165, 233, 0.2)'
                   }}
                   onMouseEnter={(e) => {
                     if (!isInitializing) {
-                      e.currentTarget.style.backgroundColor = '#2563eb';
+                      e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)';
+                      e.currentTarget.style.boxShadow = '0 4px 15px rgba(14, 165, 233, 0.3)';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!isInitializing) {
-                      e.currentTarget.style.backgroundColor = '#3b82f6';
+                      e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(14, 165, 233, 0.2)';
                     }
                   }}
                 >
@@ -114,17 +118,18 @@ export default function Layout({ children }: LayoutProps) {
         <div style={{
           margin: '0 2rem 1rem 2rem',
           padding: '1rem',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          background: 'rgba(239, 68, 68, 0.1)',
           border: '1px solid rgba(239, 68, 68, 0.3)',
-          borderRadius: '8px',
+          borderRadius: '12px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-start',
-          gap: '1rem'
+          gap: '1rem',
+          backdropFilter: 'blur(10px)'
         }}>
           <div>
-            <h4 style={{ margin: '0 0 0.5rem 0', color: '#ef4444' }}>FHE初始化失败</h4>
-            <p style={{ margin: '0', color: '#fca5a5', fontSize: '0.875rem' }}>
+            <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--color-danger)' }}>FHE初始化失败</h4>
+            <p style={{ margin: '0', color: 'rgba(239, 68, 68, 0.8)', fontSize: '0.875rem' }}>
               {error}
             </p>
           </div>
@@ -135,11 +140,13 @@ export default function Layout({ children }: LayoutProps) {
               style={{
                 padding: '0.5rem 1rem',
                 fontSize: '0.875rem',
-                backgroundColor: '#ef4444',
+                backgroundColor: 'var(--color-danger)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '6px',
+                borderRadius: '8px',
                 cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 2px 8px rgba(239, 68, 68, 0.2)'
               }}
             >
               重试
@@ -150,10 +157,11 @@ export default function Layout({ children }: LayoutProps) {
                 padding: '0.5rem 1rem',
                 fontSize: '0.875rem',
                 backgroundColor: 'transparent',
-                color: '#fca5a5',
+                color: 'rgba(239, 68, 68, 0.8)',
                 border: '1px solid rgba(239, 68, 68, 0.3)',
-                borderRadius: '6px',
+                borderRadius: '8px',
                 cursor: 'pointer',
+                transition: 'all 0.3s ease'
               }}
             >
               关闭
@@ -182,7 +190,8 @@ export default function Layout({ children }: LayoutProps) {
         textAlign: 'center', 
         padding: '2rem', 
         marginTop: '4rem',
-        color: 'rgba(255, 255, 255, 0.6)'
+        color: 'var(--text-muted)',
+        borderTop: '1px solid rgba(71, 85, 105, 0.2)'
       }}>
         <p>基于 Zama FHE 技术的隐私借贷协议</p>
       </footer>
