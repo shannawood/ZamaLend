@@ -299,8 +299,8 @@ task("task:get-price", "Gets the current Doge price")
     const price = await zamaLendContract.getDogePrice();
     const collateralRatio = await zamaLendContract.getCollateralRatio();
     
-    console.log(`Current Doge Price: ${price} (1 DOGE = ${price / 1000000} USDT)`);
-    console.log(`Collateral Ratio: ${collateralRatio}% (LTV: ${100 / collateralRatio * 100}%)`);
+    console.log(`Current Doge Price: ${price} (1 DOGE = ${Number(price) / 1000000} USDT)`);
+    console.log(`Collateral Ratio: ${collateralRatio}% (LTV: ${Number(100n / collateralRatio) * 100}%)`);
   });
 
 task("task:set-price", "Sets the Doge price (owner only)")
