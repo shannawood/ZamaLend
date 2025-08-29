@@ -12,6 +12,7 @@ export default function Layout({ children }: LayoutProps) {
   const { isInitialized, isInitializing, error, initFHE, resetError } = useFHE();
 
   const navItems = [
+    { path: '/faucet', label: 'Faucet' },
     { path: '/assets', label: 'Assets' },
     { path: '/stake', label: 'Stake' },
     { path: '/lending', label: 'Lend' },

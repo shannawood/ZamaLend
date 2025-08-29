@@ -10,6 +10,7 @@ import AssetsPage from './pages/AssetsPage';
 import StakePage from './pages/StakePage';
 import LendingPage from './pages/LendingPage';
 import RepayPage from './pages/RepayPage';
+import FaucetPage from './pages/FaucetPage';
 
 import '@rainbow-me/rainbowkit/styles.css';
 
@@ -45,6 +46,7 @@ function App() {
                   <Route path="/stake" element={<StakePage />} />
                   <Route path="/lending" element={<LendingPage />} />
                   <Route path="/repay" element={<RepayPage />} />
+                  <Route path="/faucet" element={<FaucetPage />} />
                 </Routes>
               </Layout>
             </Router>
