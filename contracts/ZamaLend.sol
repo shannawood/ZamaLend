@@ -12,7 +12,7 @@ contract ZamaLend is SepoliaConfig {
     ConfidentialDoge public cDoge;
     ConfidentialUSDT public cUSDT;
 
-    uint64 public dogePrice = 1; // 1 DOGE = 1 USDT (with 6 decimals)
+    uint64 public dogePrice = 210000; // 1 DOGE = 0.21 USDT (with 6 decimals)
     uint64 public constant COLLATERAL_RATIO = 200; // 200% collateralization (50% LTV)
     uint64 public constant PRECISION = 100;
 
@@ -52,6 +52,11 @@ contract ZamaLend is SepoliaConfig {
         FHE.allowTransient(amount, address(cDoge));
         cDoge.confidentialTransferFrom(msg.sender, address(this), amount);
 
+        // Ensure collateral amount is initialized
+        if (!FHE.isInitialized(positions[msg.sender].collateralAmount)) {
+            positions[msg.sender].collateralAmount = FHE.asEuint64(0);
+        }
+
         // Update user position
         positions[msg.sender].collateralAmount = FHE.add(positions[msg.sender].collateralAmount, amount);
         FHE.allowThis(positions[msg.sender].collateralAmount);
@@ -64,6 +69,11 @@ contract ZamaLend is SepoliaConfig {
         euint64 amount = FHE.fromExternal(encryptedAmount, inputProof);
 
         UserPosition storage position = positions[msg.sender];
+        
+        // Ensure borrowed amount is initialized
+        if (!FHE.isInitialized(position.borrowedAmount)) {
+            position.borrowedAmount = FHE.asEuint64(0);
+        }
 
         // collateral check
         euint64 newBorrowedAmount = FHE.add(position.borrowedAmount, amount);
@@ -94,6 +104,11 @@ contract ZamaLend is SepoliaConfig {
         euint64 amount = FHE.fromExternal(encryptedAmount, inputProof);
 
         UserPosition storage position = positions[msg.sender];
+        
+        // Ensure borrowed amount is initialized (handle zero case)
+        if (!FHE.isInitialized(position.borrowedAmount)) {
+            position.borrowedAmount = FHE.asEuint64(0);
+        }
 
         // Calculate actual repay amount (cannot exceed borrowed amount)
         euint64 actualRepayAmount = FHE.min(amount, position.borrowedAmount);
@@ -145,6 +160,24 @@ contract ZamaLend is SepoliaConfig {
     function getUserPosition(address user) external view returns (euint64, euint64) {
         return (positions[user].collateralAmount, positions[user].borrowedAmount);
     }
+
+    // function getAvailableToBorrow(address user) external returns (euint64) {
+    //     UserPosition storage position = positions[user];
+
+    //     // Calculate max borrowable amount based on collateral
+    //     // Max borrow = (collateral * price * PRECISION) / COLLATERAL_RATIO
+    //     euint64 collateralValue = FHE.mul(position.collateralAmount, dogePrice);
+    //     euint64 maxBorrowableAmount = FHE.div(FHE.mul(collateralValue, PRECISION), COLLATERAL_RATIO);
+
+    //     // Available to borrow = max borrowable - already borrowed
+    //     euint64 availableAmount = FHE.sub(maxBorrowableAmount, position.borrowedAmount);
+
+    //     // Make sure it's not negative (return 0 if already over-borrowed somehow)
+    //     ebool isPositive = FHE.gt(maxBorrowableAmount, position.borrowedAmount);
+    //     availableAmount = FHE.select(isPositive, availableAmount, FHE.asEuint64(0));
+
+    //     return availableAmount;
+    // }
 
     function getDogePrice() external view returns (uint64) {
         return dogePrice;
