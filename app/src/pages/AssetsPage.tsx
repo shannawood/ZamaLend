@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAccount, useWalletClient } from 'wagmi';
 import { useLendingData, useContracts, useTokenBalances } from '@/hooks/useContracts';
-import { decryptBalance } from '@/utils/fhe';
+import { decryptBalance, formatTokenAmount } from '@/utils/fhe';
 import { CONTRACT_ADDRESSES } from '@/constants/contracts';
 import { useFHE } from '@/contexts/FHEContext';
 
@@ -73,7 +73,8 @@ export default function AssetsPage() {
     
     try {
       const decrypted = await decryptBalance(ciphertext, contractAddress, address, walletClient);
-      setDecryptedAmounts(prev => ({ ...prev, [type]: decrypted }));
+      const formatted = formatTokenAmount(decrypted, 6);
+      setDecryptedAmounts(prev => ({ ...prev, [type]: formatted }));
     } catch (error) {
       console.error(`Failed to decrypt ${type} amount:`, error);
       alert(`Failed to decrypt ${type} balance, please ensure FHE is correctly initialized`);
@@ -214,7 +215,7 @@ export default function AssetsPage() {
                   </div>
                   {decryptedAmounts.cDoge !== undefined && (
                     <div className="balance-decrypted" style={{ fontSize: '0.9rem', fontWeight: '600', color: '#4ade80', marginTop: '0.25rem' }}>
-                      💰 {decryptedAmounts.cDoge || 'Decryption Failed'}
+                      💰 {decryptedAmounts.cDoge || 'Decryption Failed'} cDoge
                     </div>
                   )}
                 </div>
@@ -253,7 +254,7 @@ export default function AssetsPage() {
                   </div>
                   {decryptedAmounts.cUSDT !== undefined && (
                     <div className="balance-decrypted" style={{ fontSize: '0.9rem', fontWeight: '600', color: '#4ade80', marginTop: '0.25rem' }}>
-                      💰 {decryptedAmounts.cUSDT || 'Decryption Failed'}
+                      💰 {decryptedAmounts.cUSDT || 'Decryption Failed'} cUSDT
                     </div>
                   )}
                 </div>
@@ -297,7 +298,7 @@ export default function AssetsPage() {
                   </div>
                   {decryptedAmounts.staked !== undefined && (
                     <div className="stat-value" style={{ fontSize: '0.9rem', fontWeight: '600', color: '#4ade80', marginTop: '0.25rem' }}>
-                      📈 {decryptedAmounts.staked || 'Decryption Failed'}
+                      📈 {decryptedAmounts.staked || 'Decryption Failed'} cDoge
                     </div>
                   )}
                 </div>
@@ -328,7 +329,7 @@ export default function AssetsPage() {
                   </div>
                   {decryptedAmounts.borrowed !== undefined && (
                     <div className="stat-value" style={{ fontSize: '0.9rem', fontWeight: '600', color: '#4ade80', marginTop: '0.25rem' }}>
-                      📉 {decryptedAmounts.borrowed || 'Decryption Failed'}
+                      📉 {decryptedAmounts.borrowed || 'Decryption Failed'} cUSDT
                     </div>
                   )}
                 </div>

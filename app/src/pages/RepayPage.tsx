@@ -217,7 +217,7 @@ export default function RepayPage() {
             disabled={!repayAmount || isApproving}
             style={{ flex: 1 }}
           >
-            {isApproving ? 'Approving...' : '1. Approve'}
+            {isApproving ? 'SetOperator...' : '1. SetOperator'}
           </button>
           
           <button

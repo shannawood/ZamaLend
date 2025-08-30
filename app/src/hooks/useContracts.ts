@@ -207,19 +207,6 @@ const TOKEN_ABI = [
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "mint",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "to",
         "type": "address"
@@ -350,23 +337,37 @@ export function useContracts() {
   const mintCDoge = async (amount: number) => {
     if (!address) throw new Error('Wallet not connected');
 
+    console.log('🪙 Minting cDoge:', {
+      contract: CONTRACT_ADDRESSES.CDOGE,
+      to: address,
+      amount,
+      amountBigInt: BigInt(amount)
+    });
+
     writeContract({
       address: CONTRACT_ADDRESSES.CDOGE as `0x${string}`,
       abi: TOKEN_ABI,
       functionName: 'mint',
-      args: [address as `0x${string}`, amount],
+      args: [address as `0x${string}`, BigInt(amount)],
     });
   };
 
   const mintCUSDT = async (amount: number) => {
     if (!address) throw new Error('Wallet not connected');
 
+    console.log('💰 Minting cUSDT:', {
+      contract: CONTRACT_ADDRESSES.CUSDT,
+      to: CONTRACT_ADDRESSES.ZAMA_LEND,
+      amount,
+      amountBigInt: BigInt(amount)
+    });
+
     // Mint cUSDT directly to the ZamaLend contract
     writeContract({
       address: CONTRACT_ADDRESSES.CUSDT as `0x${string}`,
       abi: TOKEN_ABI,
       functionName: 'mint',
-      args: [CONTRACT_ADDRESSES.ZAMA_LEND as `0x${string}`, amount],
+      args: [CONTRACT_ADDRESSES.ZAMA_LEND as `0x${string}`, BigInt(amount)],
     });
   };
 

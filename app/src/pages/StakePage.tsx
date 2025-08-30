@@ -229,7 +229,7 @@ export default function StakePage() {
             title={!fheInitialized ? 'Please initialize FHE first' : undefined}
             style={{ flex: 1 }}
           >
-            {isApproving ? 'Approving...' : '1. Approve'}
+            {isApproving ? 'SetOperator...' : '1. SetOperator'}
           </button>
           
           <button

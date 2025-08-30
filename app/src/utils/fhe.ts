@@ -142,3 +142,17 @@ export async function decryptBalance(
     return null;
   }
 }
+
+export function formatTokenAmount(rawAmount: string | null, decimals: number = 6): string {
+  if (!rawAmount) return '0';
+  
+  try {
+    const amount = BigInt(rawAmount);
+    const divisor = BigInt(10 ** decimals);
+    const formattedAmount = Number(amount) / Number(divisor);
+    return formattedAmount.toFixed(6).replace(/\.?0+$/, '');
+  } catch (error) {
+    console.error('Failed to format token amount:', error);
+    return rawAmount;
+  }
+}

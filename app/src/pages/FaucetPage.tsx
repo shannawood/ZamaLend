@@ -2,12 +2,10 @@ import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useContracts } from '@/hooks/useContracts';
 import { CONTRACT_ADDRESSES } from '@/constants/contracts';
-import { useFHE } from '@/contexts/FHEContext';
 
 export default function FaucetPage() {
   const { address, isConnected } = useAccount();
   const { mintCDoge, mintCUSDT } = useContracts();
-  const { isInitialized: fheInitialized, initFHE } = useFHE();
   
   const [mintingCDoge, setMintingCDoge] = useState(false);
   const [mintingCUSDT, setMintingCUSDT] = useState(false);
