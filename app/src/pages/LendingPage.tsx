@@ -186,7 +186,7 @@ export default function LendingPage() {
           )}
           
           <p style={{ margin: '0', fontSize: '0.875rem', color: 'rgba(34, 197, 94, 0.8)' }}>
-            💡 Based on staked cDoge × 0.21 USDT × 50% LTV
+            💡 Based on staked value × 50% 
           </p>
         </div>
 

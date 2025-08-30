@@ -65,8 +65,8 @@ export default function RepayPage() {
       setIsApproving(true);
       setMessage('Approving...');
       
-      const amount = parseInt(repayAmount) * 1000000; // Convert to 6-decimal precision
-      await approveToken(CONTRACT_ADDRESSES.CUSDT, amount);
+      // approveToken only needs tokenAddress and optional until timestamp
+      await approveToken(CONTRACT_ADDRESSES.CUSDT);
       
       setMessage('Approval successful! You can now repay');
     } catch (error) {
