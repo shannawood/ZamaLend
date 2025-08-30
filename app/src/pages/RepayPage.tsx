@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAccount, useWalletClient } from 'wagmi';
 import { useTokenBalances, useLendingData, useContracts } from '@/hooks/useContracts';
-import { decryptBalance } from '@/utils/fhe';
+import { decryptBalance, formatTokenAmount } from '@/utils/fhe';
 import { CONTRACT_ADDRESSES } from '@/constants/contracts';
 
 export default function RepayPage() {
@@ -49,7 +49,8 @@ export default function RepayPage() {
     
     try {
       const decrypted = await decryptBalance(ciphertext, contractAddress, address, walletClient);
-      setDecryptedAmounts(prev => ({ ...prev, [type]: decrypted }));
+      const formatted = formatTokenAmount(decrypted, 6);
+      setDecryptedAmounts(prev => ({ ...prev, [type]: formatted }));
     } catch (error) {
       console.error(`Failed to decrypt ${type} amount:`, error);
     } finally {
@@ -64,7 +65,7 @@ export default function RepayPage() {
       setIsApproving(true);
       setMessage('Approving...');
       
-      const amount = parseInt(repayAmount);
+      const amount = parseInt(repayAmount) * 1000000; // Convert to 6-decimal precision
       await approveToken(CONTRACT_ADDRESSES.CUSDT, amount);
       
       setMessage('Approval successful! You can now repay');
@@ -83,7 +84,7 @@ export default function RepayPage() {
       setIsRepaying(true);
       setMessage('Repaying...');
       
-      const amount = parseInt(repayAmount);
+      const amount = parseInt(repayAmount) * 1000000; // Convert to 6-decimal precision
       await repayTokens(amount);
       
       setMessage('Repayment successful!');
@@ -128,7 +129,7 @@ export default function RepayPage() {
             </div>
             {decryptedAmounts.borrowed !== undefined && (
               <div className="stat-value">
-                {decryptedAmounts.borrowed || 'Decryption Failed'}
+                {decryptedAmounts.borrowed || 'Decryption Failed'} cUSDT
               </div>
             )}
             <button
@@ -148,7 +149,7 @@ export default function RepayPage() {
             </div>
             {decryptedAmounts.balance !== undefined && (
               <div className="stat-value">
-                {decryptedAmounts.balance || 'Decryption Failed'}
+                {decryptedAmounts.balance || 'Decryption Failed'} cUSDT
               </div>
             )}
             <button
@@ -204,7 +205,7 @@ export default function RepayPage() {
             <span>Remaining Debt:</span>
             <span>
               {decryptedAmounts.borrowed && repayAmount 
-                ? Math.max(0, parseInt(decryptedAmounts.borrowed) - parseInt(repayAmount))
+                ? Math.max(0, parseFloat(decryptedAmounts.borrowed) - parseFloat(repayAmount)).toFixed(6).replace(/\.?0+$/, '')
                 : 'Calculating...'} cUSDT
             </span>
           </div>

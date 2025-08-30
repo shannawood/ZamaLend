@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
 import { useContracts, useLendingData } from '@/hooks/useContracts';
 import { useFHE } from '@/contexts/FHEContext';
+import { decryptBalance, formatTokenAmount } from '@/utils/fhe';
+import { CONTRACT_ADDRESSES } from '@/constants/contracts';
 
 export default function LendingPage() {
   const { address, isConnected } = useAccount();
+  const { data: walletClient } = useWalletClient();
   const { borrowTokens } = useContracts();
   const { availableToBorrow } = useLendingData(['available']);
   const { isInitialized: fheInitialized, initFHE } = useFHE();
@@ -12,6 +15,38 @@ export default function LendingPage() {
   const [borrowAmount, setBorrowAmount] = useState('');
   const [isBorrowing, setIsBorrowing] = useState(false);
   const [message, setMessage] = useState('');
+  const [decryptedAvailable, setDecryptedAvailable] = useState<string | null>(null);
+  const [isDecrypting, setIsDecrypting] = useState(false);
+
+  const handleDecryptAvailable = async () => {
+    if (!address || !walletClient || !availableToBorrow) return;
+    
+    if (!fheInitialized) {
+      alert('Please initialize FHE before decryption');
+      return;
+    }
+    
+    setIsDecrypting(true);
+    
+    try {
+      const decrypted = await decryptBalance(availableToBorrow, CONTRACT_ADDRESSES.ZAMA_LEND, address, walletClient);
+      if (decrypted) {
+        // 这里是 staked cDoge 的数量，需要计算可借贷 cUSDT 数量
+        // 可借贷 cUSDT = staked cDoge × price × 50% (LTV)
+        // price = 0.21 USDT per cDoge
+        const stakedCDoge = parseFloat(formatTokenAmount(decrypted, 6));
+        const availableCUSDT = stakedCDoge * 0.21 * 0.5; // 50% LTV
+        setDecryptedAvailable(availableCUSDT.toFixed(6).replace(/\.?0+$/, ''));
+      } else {
+        setDecryptedAvailable('Decryption Failed');
+      }
+    } catch (error) {
+      console.error('Failed to decrypt available amount:', error);
+      setDecryptedAvailable('Decryption Failed');
+    } finally {
+      setIsDecrypting(false);
+    }
+  };
 
   const handleBorrow = async () => {
     if (!borrowAmount || !address) return;
@@ -114,12 +149,44 @@ export default function LendingPage() {
           borderRadius: '8px',
           marginBottom: '2rem'
         }}>
-          <h3 style={{ margin: '0 0 0.5rem 0', color: '#22c55e' }}>Available Credit</h3>
-          <div className="balance-encrypted" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+            <h3 style={{ margin: '0', color: '#22c55e' }}>Available Credit</h3>
+            <button
+              onClick={handleDecryptAvailable}
+              disabled={!availableToBorrow || isDecrypting || !fheInitialized}
+              title={!fheInitialized ? 'Please initialize FHE first' : undefined}
+              style={{
+                padding: '0.25rem 0.5rem',
+                fontSize: '0.75rem',
+                backgroundColor: '#22c55e',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                minWidth: '60px'
+              }}
+            >
+              {isDecrypting ? '...' : 'Decrypt'}
+            </button>
+          </div>
+          
+          <div className="balance-encrypted" style={{ color: 'rgba(255, 255, 255, 0.8)', marginBottom: '0.5rem' }}>
             Encrypted balance: {availableToBorrow ? `${availableToBorrow.slice(0, 10)}...` : 'Loading...'}
           </div>
-          <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.875rem', color: 'rgba(34, 197, 94, 0.8)' }}>
-            💡 This is the maximum borrowable amount calculated based on your staked assets
+          
+          {decryptedAvailable !== null && (
+            <div style={{ 
+              color: '#4ade80', 
+              fontWeight: '600',
+              fontSize: '1.1rem',
+              marginBottom: '0.5rem'
+            }}>
+              💰 {decryptedAvailable !== 'Decryption Failed' ? `${decryptedAvailable} cUSDT` : 'Decryption Failed'}
+            </div>
+          )}
+          
+          <p style={{ margin: '0', fontSize: '0.875rem', color: 'rgba(34, 197, 94, 0.8)' }}>
+            💡 Based on staked cDoge × 0.21 USDT × 50% LTV
           </p>
         </div>
 

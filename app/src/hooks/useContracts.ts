@@ -547,8 +547,8 @@ export function useLendingData(dataTypes: ('staked' | 'borrowed' | 'available')[
           newData.borrowedAmount = userPosition[1];
         }
         if (needsAvailable) {
-          // 计算可借贷额度需要额外逻辑，这里先设为占位符
-          newData.availableToBorrow = "0x0000000000000000000000000000000000000000000000000000000000000000";
+          // Available Credit 显示的是 staked cDoge amount（用于计算可借贷额度）
+          newData.availableToBorrow = userPosition[0]; // collateral amount (staked cDoge)
         }
 
         setData(newData);
