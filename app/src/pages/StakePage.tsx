@@ -3,7 +3,6 @@ import { useAccount } from 'wagmi';
 import { useContracts, useTokenBalances } from '@/hooks/useContracts';
 import { CONTRACT_ADDRESSES } from '@/constants/contracts';
 import { useFHE } from '@/contexts/FHEContext';
-import { encryptValue } from '@/utils/fhe';
 
 export default function StakePage() {
   const { address, isConnected, status } = useAccount();
@@ -24,7 +23,6 @@ export default function StakePage() {
   const [isApproving, setIsApproving] = useState(false);
   const [isStaking, setIsStaking] = useState(false);
   const [message, setMessage] = useState('');
-  const [testingEncryption, setTestingEncryption] = useState(false);
 
   const handleApprove = async () => {
     if (!stakeAmount || !address) return;
@@ -95,26 +93,6 @@ export default function StakePage() {
   };
 
 
-  const testEncryption = async () => {
-    if (!address || !fheInitialized) {
-      setMessage('Please connect wallet and initialize FHE first');
-      return;
-    }
-
-    setTestingEncryption(true);
-    try {
-      console.log('🧪 Testing encryption...');
-      const testValue = 100;
-      const encrypted = await encryptValue(testValue, CONTRACT_ADDRESSES.ZAMA_LEND, address);
-      console.log('✅ Encryption test successful:', encrypted);
-      setMessage(`Encryption test successful! Test value: ${testValue}`);
-    } catch (error) {
-      console.error('❌ Encryption test failed:', error);
-      setMessage(`Encryption test failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setTestingEncryption(false);
-    }
-  };
 
   if (!isConnected) {
     return (
